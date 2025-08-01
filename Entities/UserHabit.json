@@ -1,0 +1,78 @@
+{
+  "name": "UserHabit",
+  "type": "object",
+  "properties": {
+    "habit_id": {
+      "type": "string",
+      "description": "Reference to the habit"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Reference to the user"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "completed"
+      ],
+      "default": "active"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "target_frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "custom"
+      ],
+      "default": "daily"
+    },
+    "custom_frequency": {
+      "type": "object",
+      "properties": {
+        "days_per_week": {
+          "type": "number"
+        },
+        "specific_days": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "user_answers": {
+      "type": "object",
+      "description": "User's answers to habit setup questions"
+    },
+    "streak_current": {
+      "type": "number",
+      "default": 0
+    },
+    "streak_longest": {
+      "type": "number",
+      "default": 0
+    },
+    "total_completions": {
+      "type": "number",
+      "default": 0
+    },
+    "reminder_time": {
+      "type": "string",
+      "format": "time"
+    },
+    "reminder_enabled": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "habit_id",
+    "user_id"
+  ]
+}
