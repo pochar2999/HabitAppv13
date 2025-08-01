@@ -1,0 +1,47 @@
+{
+  "name": "NutritionGoals",
+  "type": "object",
+  "properties": {
+    "daily_calories": {
+      "type": "number",
+      "default": 2000,
+      "description": "Daily calorie goal"
+    },
+    "daily_protein": {
+      "type": "number",
+      "default": 50,
+      "description": "Daily protein goal in grams"
+    },
+    "daily_carbs": {
+      "type": "number",
+      "default": 250,
+      "description": "Daily carbs goal in grams"
+    },
+    "daily_fat": {
+      "type": "number",
+      "default": 65,
+      "description": "Daily fat goal in grams"
+    },
+    "daily_water": {
+      "type": "number",
+      "default": 64,
+      "description": "Daily water goal in ounces"
+    },
+    "water_unit": {
+      "type": "string",
+      "enum": [
+        "oz",
+        "ml"
+      ],
+      "default": "oz",
+      "description": "Preferred water unit"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who owns these goals"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}
