@@ -34,7 +34,7 @@ import { format, subDays, startOfWeek, endOfWeek, eachDayOfInterval } from "date
 
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
 
-export default function Progress() {
+export default function ProgressPage() {
   const [user, setUser] = useState(null);
   const [userHabits, setUserHabits] = useState([]);
   const [habits, setHabits] = useState([]);
