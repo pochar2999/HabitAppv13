@@ -1,0 +1,20 @@
+{
+  "name": "UserFinancialTipProgress",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "tip_id": {
+      "type": "string"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "user_id",
+    "tip_id"
+  ]
+}
