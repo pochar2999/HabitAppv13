@@ -1,0 +1,50 @@
+{
+  "name": "FinanceTransaction",
+  "type": "object",
+  "properties": {
+    "amount": {
+      "type": "number"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "income",
+        "expense"
+      ]
+    },
+    "spending_category": {
+      "type": "string",
+      "enum": [
+        "Fixed Costs",
+        "Investments",
+        "Savings",
+        "Guilt-Free Spending"
+      ]
+    },
+    "custom_category": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "description": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "receipt_url": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "amount",
+    "type",
+    "date",
+    "user_id"
+  ]
+}
