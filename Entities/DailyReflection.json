@@ -1,0 +1,35 @@
+{
+  "name": "DailyReflection",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "answers": {
+      "type": "object",
+      "properties": {
+        "went_well": {
+          "type": "string"
+        },
+        "went_better": {
+          "type": "string"
+        },
+        "learned": {
+          "type": "string"
+        },
+        "felt": {
+          "type": "string"
+        }
+      }
+    },
+    "user_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "date",
+    "answers",
+    "user_id"
+  ]
+}
