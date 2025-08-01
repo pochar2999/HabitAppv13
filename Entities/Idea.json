@@ -1,0 +1,41 @@
+{
+  "name": "Idea",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Startup",
+        "Personal Project",
+        "Creative",
+        "Life Improvement",
+        "Other"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Backlog",
+        "Researching",
+        "In Progress",
+        "Launched",
+        "Archived"
+      ],
+      "default": "Backlog"
+    }
+  },
+  "required": [
+    "user_id",
+    "title",
+    "category"
+  ]
+}
