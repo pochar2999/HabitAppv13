@@ -1,0 +1,37 @@
+{
+  "name": "GratitudeEntry",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who submitted the gratitude entry"
+    },
+    "content": {
+      "type": "string",
+      "description": "What the user is grateful for"
+    },
+    "color": {
+      "type": "string",
+      "enum": [
+        "yellow",
+        "pink",
+        "blue",
+        "green",
+        "purple",
+        "orange"
+      ],
+      "default": "yellow",
+      "description": "Color of the sticky note"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the entry was created"
+    }
+  },
+  "required": [
+    "user_id",
+    "content",
+    "date"
+  ]
+}
