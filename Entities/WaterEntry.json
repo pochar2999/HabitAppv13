@@ -1,0 +1,38 @@
+{
+  "name": "WaterEntry",
+  "type": "object",
+  "properties": {
+    "amount": {
+      "type": "number",
+      "description": "Amount of water in ounces"
+    },
+    "unit": {
+      "type": "string",
+      "enum": [
+        "oz",
+        "ml"
+      ],
+      "default": "oz",
+      "description": "Unit of measurement"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of water intake"
+    },
+    "time": {
+      "type": "string",
+      "format": "time",
+      "description": "Time of water intake"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who logged this water intake"
+    }
+  },
+  "required": [
+    "amount",
+    "date",
+    "user_id"
+  ]
+}
