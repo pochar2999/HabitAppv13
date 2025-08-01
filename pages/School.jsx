@@ -10,10 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, ArrowLeft, BookOpen, Calendar, BarChart2, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import SchoolSetup from '../components/school/SchoolSetup';
-import SchoolAssignments from '../components/school/SchoolAssignments';
-import SchoolCalendar from '../components/school/SchoolCalendar';
-import SchoolStudyTracker from '../components/school/SchoolStudyTracker';
+import SchoolSetup from '@/components/school/SchoolSetup';
+import SchoolAssignments from '@/components/school/SchoolAssignments';
+import SchoolCalendar from '@/components/school/SchoolCalendar';
+import SchoolStudyTracker from '@/components/school/SchoolStudyTracker';
 
 export default function School() {
   const [user, setUser] = useState(null);
