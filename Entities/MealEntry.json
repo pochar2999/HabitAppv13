@@ -1,0 +1,68 @@
+{
+  "name": "MealEntry",
+  "type": "object",
+  "properties": {
+    "meal_type": {
+      "type": "string",
+      "enum": [
+        "breakfast",
+        "lunch",
+        "dinner",
+        "snack"
+      ],
+      "description": "Type of meal"
+    },
+    "food_name": {
+      "type": "string",
+      "description": "Name of the food/meal"
+    },
+    "calories": {
+      "type": "number",
+      "description": "Calories consumed"
+    },
+    "protein": {
+      "type": "number",
+      "description": "Protein in grams"
+    },
+    "carbs": {
+      "type": "number",
+      "description": "Carbohydrates in grams"
+    },
+    "fat": {
+      "type": "number",
+      "description": "Fat in grams"
+    },
+    "fiber": {
+      "type": "number",
+      "description": "Fiber in grams"
+    },
+    "sugar": {
+      "type": "number",
+      "description": "Sugar in grams"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the meal"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the meal"
+    },
+    "time": {
+      "type": "string",
+      "format": "time",
+      "description": "Time of the meal"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who logged this meal"
+    }
+  },
+  "required": [
+    "meal_type",
+    "food_name",
+    "date",
+    "user_id"
+  ]
+}
