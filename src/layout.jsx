@@ -29,6 +29,13 @@ import {
   Lightbulb
 } from "lucide-react";
 import { Button } from "./components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navigationItems = [
@@ -121,6 +128,74 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <style>{`
+        :root {
+          --primary: 59 130 246;
+          --secondary: 147 51 234;
+          --accent: 16 185 129;
+          --background: 248 250 252;
+          --card: 255 255 255;
+          --text: 15 23 42;
+          --text-muted: 100 116 139;
+          --border: 226 232 240;
+        }
+        
+        * {
+          -webkit-tap-highlight-color: transparent !important;
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          user-select: none;
+        }
+        
+        button, input, select, textarea {
+          -webkit-appearance: none !important;
+          appearance: none !important;
+          -webkit-tap-highlight-color: transparent !important;
+          -webkit-border-radius: 0 !important;
+          border-radius: 0.375rem !important;
+        }
+        
+        input, select, textarea {
+          font-size: 16px !important;
+        }
+        
+        button {
+          -webkit-appearance: none !important;
+          appearance: none !important;
+          background: none;
+          border: none;
+        }
+        
+        .glass-effect {
+          backdrop-filter: blur(20px);
+          background: rgba(255, 255, 255, 0.85) !important;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .gradient-text {
+          background: linear-gradient(135deg, rgb(59, 130, 246), rgb(147, 51, 234));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        
+        @media (max-width: 768px) {
+          .bg-white, .bg-gray-50, .bg-blue-50 {
+            background-color: white !important;
+          }
+          
+          .border-gray-200, .border-blue-200 {
+            border-color: rgb(226, 232, 240) !important;
+          }
+          
+          button:focus, button:active, button:hover,
+          .cursor-pointer:focus, .cursor-pointer:active, .cursor-pointer:hover {
+            background-color: initial !important;
+            outline: none !important;
+          }
+        }
+      `}</style>
+
       {/* Mobile Header */}
       <div className="lg:hidden bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div className="flex items-center justify-between px-4 py-3">
@@ -128,12 +203,32 @@ export default function Layout({ children, currentPageName }) {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
               <Target className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">HabitAppV9</span>
+            <span className="text-xl font-bold gradient-text">HabitAppV9</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-              {user.full_name?.[0] || user.email?.[0]}
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user.profile_picture} />
+                    <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm">
+                      {user.full_name?.[0] || user.email?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <div className="px-3 py-2 border-b">
+                  <p className="font-semibold">{user.full_name || "User"}</p>
+                  <p className="text-sm text-gray-500">{user.email}</p>
+                </div>
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
             <Button
               variant="ghost"
               size="icon"
@@ -160,7 +255,7 @@ export default function Layout({ children, currentPageName }) {
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <Target className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">HabitAppV9</span>
+                <span className="text-xl font-bold gradient-text">HabitAppV9</span>
               </div>
               <Button
                 variant="ghost"
@@ -173,9 +268,12 @@ export default function Layout({ children, currentPageName }) {
 
             <div className="p-4">
               <div className="flex items-center gap-3 py-4 border-b border-gray-200">
-                <div className="h-10 w-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white">
-                  {user.full_name?.[0] || user.email?.[0]}
-                </div>
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={user.profile_picture} />
+                  <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    {user.full_name?.[0] || user.email?.[0]}
+                  </AvatarFallback>
+                </Avatar>
                 <div>
                   <p className="font-semibold">{user.full_name || "User"}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
@@ -244,13 +342,13 @@ export default function Layout({ children, currentPageName }) {
       <div className="flex">
         {/* Desktop Sidebar */}
         <div className="hidden lg:flex w-80 flex-col fixed inset-y-0 z-50">
-          <div className="flex-1 flex flex-col min-h-0 bg-white/85 backdrop-blur-md">
+          <div className="flex-1 flex flex-col min-h-0 glass-effect">
             <div className="flex items-center gap-3 p-6 border-b border-gray-200">
               <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
                 <Target className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">HabitAppV9</h1>
+                <h1 className="text-2xl font-bold gradient-text">HabitAppV9</h1>
                 <p className="text-sm text-gray-500">Build better habits</p>
               </div>
             </div>
@@ -295,23 +393,28 @@ export default function Layout({ children, currentPageName }) {
             </nav>
             
             <div className="p-4 border-t border-gray-200">
-              <div className="flex items-center gap-3 p-3">
-                <div className="h-8 w-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-sm">
-                  {user.full_name?.[0] || user.email?.[0]}
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="font-semibold">{user.full_name || "User"}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <LogOut className="w-4 h-4" />
-                </Button>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-start p-3">
+                    <Avatar className="h-8 w-8 mr-3">
+                      <AvatarImage src={user.profile_picture} />
+                      <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                        {user.full_name?.[0] || user.email?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 text-left">
+                      <p className="font-semibold">{user.full_name || "User"}</p>
+                      <p className="text-sm text-gray-500">{user.email}</p>
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64">
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
