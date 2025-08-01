@@ -1,0 +1,32 @@
+{
+  "name": "Quote",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Motivation",
+        "Wisdom",
+        "Life",
+        "Success",
+        "Humor",
+        "Philosophy",
+        "Other"
+      ]
+    }
+  },
+  "required": [
+    "user_id",
+    "content",
+    "category"
+  ]
+}
