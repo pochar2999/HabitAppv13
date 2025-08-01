@@ -1,0 +1,38 @@
+{
+  "name": "Liability",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "home",
+        "car",
+        "student",
+        "credit_card",
+        "other"
+      ]
+    },
+    "total_amount": {
+      "type": "number"
+    },
+    "monthly_payment": {
+      "type": "number"
+    },
+    "interest_rate": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "user_id",
+    "name",
+    "type",
+    "total_amount",
+    "monthly_payment"
+  ]
+}
