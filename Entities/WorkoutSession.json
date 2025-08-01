@@ -1,0 +1,60 @@
+{
+  "name": "WorkoutSession",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who performed the workout"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the workout"
+    },
+    "routine_name": {
+      "type": "string",
+      "description": "Name of the workout routine (e.g., Push, Pull, Legs)"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "exercise_name": {
+            "type": "string"
+          },
+          "sets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "reps": {
+                  "type": "number"
+                },
+                "weight": {
+                  "type": "number"
+                },
+                "notes": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Total workout duration in minutes"
+    },
+    "notes": {
+      "type": "string",
+      "description": "General notes about the workout"
+    }
+  },
+  "required": [
+    "user_id",
+    "date",
+    "routine_name"
+  ]
+}
