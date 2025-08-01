@@ -1,0 +1,53 @@
+{
+  "name": "WorkoutTemplate",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who created the template"
+    },
+    "routine_name": {
+      "type": "string",
+      "description": "Name of the workout routine"
+    },
+    "day_of_week": {
+      "type": "string",
+      "enum": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "description": "Assigned day of the week"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "exercise_name": {
+            "type": "string"
+          },
+          "target_sets": {
+            "type": "number"
+          },
+          "target_reps": {
+            "type": "string",
+            "description": "Target reps (can be a range like '8-12')"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "user_id",
+    "routine_name",
+    "day_of_week"
+  ]
+}
