@@ -1,6 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Layout from '../layout'
+import Layout from '../layout.jsx'
 import Home from '../pages/Home'
 import Habits from '../pages/Habits'
 import HabitSelect from '../pages/HabitSelect'
