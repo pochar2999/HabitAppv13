@@ -1,0 +1,102 @@
+{
+  "name": "Habit",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Name of the habit"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of the habit"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "health",
+        "productivity",
+        "mindfulness",
+        "social",
+        "learning",
+        "fitness",
+        "nutrition",
+        "sleep",
+        "breaking"
+      ],
+      "description": "Category of the habit"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "build",
+        "break"
+      ],
+      "description": "Whether this is a habit to build or break"
+    },
+    "techniques": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "scientific_backing": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "benefits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "time",
+              "number",
+              "select",
+              "boolean"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    },
+    "icon": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "type"
+  ]
+}
