@@ -1,0 +1,29 @@
+{
+  "name": "FutureLetter",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "unlock_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "is_unlocked": {
+      "type": "boolean",
+      "default": false
+    },
+    "user_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "content",
+    "unlock_date",
+    "user_id"
+  ]
+}
