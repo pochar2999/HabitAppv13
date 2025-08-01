@@ -1,0 +1,35 @@
+{
+  "name": "HabitLog",
+  "type": "object",
+  "properties": {
+    "user_habit_id": {
+      "type": "string",
+      "description": "Reference to the user habit"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": true
+    },
+    "notes": {
+      "type": "string"
+    },
+    "mood_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "difficulty_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5
+    }
+  },
+  "required": [
+    "user_habit_id",
+    "date"
+  ]
+}
