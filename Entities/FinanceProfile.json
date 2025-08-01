@@ -1,0 +1,41 @@
+{
+  "name": "FinanceProfile",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "monthly_income": {
+      "type": "number"
+    },
+    "tax_rate": {
+      "type": "number"
+    },
+    "k401_contribution": {
+      "type": "number"
+    },
+    "k401_employer_match": {
+      "type": "number"
+    },
+    "roth_ira_contribution": {
+      "type": "number"
+    },
+    "savings_goal_type": {
+      "type": "string",
+      "enum": [
+        "percentage",
+        "amount"
+      ]
+    },
+    "savings_goal_value": {
+      "type": "number"
+    },
+    "savings_goal_deadline": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}
