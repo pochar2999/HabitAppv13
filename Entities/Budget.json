@@ -1,0 +1,25 @@
+{
+  "name": "Budget",
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "month": {
+      "type": "string",
+      "description": "Format: YYYY-MM"
+    },
+    "user_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "category",
+    "amount",
+    "month",
+    "user_id"
+  ]
+}
