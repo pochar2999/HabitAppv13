@@ -1,0 +1,35 @@
+{
+  "name": "Badge",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "criteria_type": {
+      "type": "string",
+      "enum": [
+        "streak",
+        "habits_completed",
+        "journal_entries",
+        "goals_completed",
+        "tasks_completed"
+      ]
+    },
+    "criteria_value": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "icon",
+    "criteria_type",
+    "criteria_value"
+  ]
+}
