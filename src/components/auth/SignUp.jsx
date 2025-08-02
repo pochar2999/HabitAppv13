@@ -44,36 +44,14 @@ export default function SignUp() {
     setLoading(true);
     try {
       await signup(formData.email, formData.password, formData.fullName);
-      setSuccess(true);
+      // Navigate directly to app since email verification is disabled
+      navigate('/');
     } catch (error) {
       console.error('Signup error:', error);
     }
     setLoading(false);
   };
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-8 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mail className="w-8 h-8 text-green-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Check Your Email</h2>
-            <p className="text-gray-600 mb-6">
-              We've sent a verification email to <strong>{formData.email}</strong>. 
-              Please click the link in the email to verify your account before signing in.
-            </p>
-            <Link to="/signin">
-              <Button className="w-full">
-                Go to Sign In
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">

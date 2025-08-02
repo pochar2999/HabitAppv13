@@ -44,8 +44,8 @@ export const AuthProvider = ({ children }) => {
         await updateProfile(user, { displayName: fullName });
       }
       
-      // Send email verification
-      await sendEmailVerification(user);
+      // Note: Email verification disabled for demo purposes
+      // await sendEmailVerification(user);
       
       return user;
     } catch (error) {

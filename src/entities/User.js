@@ -17,7 +17,7 @@ export const User = {
           email: currentUser.email,
           full_name: currentUser.displayName || '',
           profile_picture: currentUser.photoURL || null,
-          emailVerified: currentUser.emailVerified,
+          emailVerified: true, // Set to true since we're not requiring email verification
           ...userDoc.data()
         };
       } else {
@@ -39,7 +39,7 @@ export const User = {
           email: currentUser.email,
           full_name: currentUser.displayName || '',
           profile_picture: currentUser.photoURL || null,
-          emailVerified: currentUser.emailVerified,
+          emailVerified: true, // Set to true since we're not requiring email verification
           ...userData
         };
       }

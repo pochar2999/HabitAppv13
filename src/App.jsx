@@ -36,7 +36,7 @@ function AppRoutes() {
   const { currentUser } = useAuth();
 
   // Show auth pages if user is not signed in or email not verified
-  if (!currentUser || !currentUser.emailVerified) {
+  if (!currentUser) {
     return (
       <Routes>
         <Route path="/signup" element={<SignUp />} />

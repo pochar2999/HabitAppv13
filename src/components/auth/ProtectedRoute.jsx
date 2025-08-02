@@ -10,11 +10,7 @@ export default function ProtectedRoute({ children }) {
     return null;
   }
 
-  // If user is signed in but email is not verified
-  if (!currentUser.emailVerified) {
-    return <EmailVerification />;
-  }
 
-  // User is signed in and email is verified
+  // User is signed in
   return children;
 }
