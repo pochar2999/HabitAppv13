@@ -1,6 +1,7 @@
 import { useAuth } from '../contexts/AuthContext';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { enableNetwork, disableNetwork } from 'firebase/firestore';
 
 
 export const User = {
@@ -8,6 +9,9 @@ export const User = {
     if (!currentUser) return null;
     
     try {
+      // Ensure network is enabled
+      await enableNetwork(db);
+      
       const userDocRef = doc(db, 'users', currentUser.uid);
       const userDoc = await getDoc(userDocRef);
       
@@ -45,12 +49,29 @@ export const User = {
       }
     } catch (error) {
       console.error('Error getting user data:', error);
+      
+      // If offline, return basic user data from auth
+      if (error.code === 'unavailable' || error.message.includes('offline')) {
+        return {
+          id: currentUser.uid,
+          email: currentUser.email,
+          full_name: currentUser.displayName || '',
+          profile_picture: currentUser.photoURL || null,
+          emailVerified: true,
+          xp: 0,
+          level: 1,
+          finance_onboarding_completed: false,
+          offline: true
+        };
+      }
+      
       throw error;
     }
   },
 
   update: async (userId, data) => {
     try {
+      await enableNetwork(db);
       const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, {
         ...data,
@@ -65,6 +86,7 @@ export const User = {
 
   updateMyUserData: async (userId, data) => {
     try {
+      await enableNetwork(db);
       const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, {
         ...data,

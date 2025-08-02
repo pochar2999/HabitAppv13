@@ -91,6 +91,18 @@ export default function Layout({ children, currentPageName }) {
       }
     } catch (error) {
       console.error("Error loading user data:", error);
+      
+      // If there's an error loading user data, create a fallback user object
+      if (currentUser) {
+        setUser({
+          id: currentUser.uid,
+          email: currentUser.email,
+          full_name: currentUser.displayName || 'User',
+          profile_picture: currentUser.photoURL || null,
+          emailVerified: true,
+          offline: true
+        });
+      }
     }
     setLoading(false);
   };

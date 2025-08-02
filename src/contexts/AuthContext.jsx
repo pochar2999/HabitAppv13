@@ -2,13 +2,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
+  signInWithPopup,
   createUserWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
   sendEmailVerification,
   updateProfile
 } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { auth, googleProvider } from '../lib/firebase';
 
 const AuthContext = createContext();
 
@@ -65,6 +66,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const signInWithGoogle = async () => {
+    setAuthError(null);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      return result.user;
+    } catch (error) {
+      setAuthError(getErrorMessage(error.code));
+      throw error;
+    }
+  };
+
   const logout = async () => {
     setAuthError(null);
     try {
@@ -113,6 +125,10 @@ export const AuthProvider = ({ children }) => {
         return 'Too many failed attempts. Please try again later.';
       case 'auth/network-request-failed':
         return 'Network error. Please check your connection.';
+      case 'auth/popup-closed-by-user':
+        return 'Sign-in popup was closed. Please try again.';
+      case 'auth/cancelled-popup-request':
+        return 'Sign-in was cancelled. Please try again.';
       default:
         return 'An error occurred. Please try again.';
     }
@@ -122,6 +138,7 @@ export const AuthProvider = ({ children }) => {
     currentUser,
     signup,
     signin,
+    signInWithGoogle,
     logout,
     resetPassword,
     resendVerification,

@@ -6,7 +6,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Alert, AlertDescription } from '../ui/alert';
-import { Target, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { Target, Mail, Lock, User, Eye, EyeOff, Chrome } from 'lucide-react';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -18,8 +18,8 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const { signup, authError, setAuthError } = useAuth();
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const { signup, signInWithGoogle, authError, setAuthError } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -52,6 +52,16 @@ export default function SignUp() {
     setLoading(false);
   };
 
+  const handleGoogleSignUp = async () => {
+    setGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+      navigate('/');
+    } catch (error) {
+      console.error('Google signup error:', error);
+    }
+    setGoogleLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
@@ -64,6 +74,36 @@ export default function SignUp() {
           <p className="text-gray-600">Join HabitAppV9 and start building better habits</p>
         </CardHeader>
         <CardContent>
+          {/* Google Sign Up Button */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full mb-4"
+            onClick={handleGoogleSignUp}
+            disabled={googleLoading}
+          >
+            {googleLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+                Signing up with Google...
+              </>
+            ) : (
+              <>
+                <Chrome className="w-4 h-4 mr-2" />
+                Continue with Google
+              </>
+            )}
+          </Button>
+
+          <div className="relative mb-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">Or continue with email</span>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {authError && (
               <Alert className="border-red-200 bg-red-50">
