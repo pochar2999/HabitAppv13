@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "../entities/User";
 import { Todo } from "../entities/Todo";
 import { Button } from "../components/ui/button";
@@ -14,6 +15,7 @@ import { Plus, Calendar, CheckCircle, Clock, Trash2, Edit } from "lucide-react";
 import { format } from "date-fns";
 
 export default function TodoList() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [todos, setTodos] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
@@ -28,15 +30,19 @@ export default function TodoList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      loadData();
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
       setUser(userData);
       
-      const todoData = await Todo.filter({ created_by: userData.email });
+      const todoData = await Todo.filter(currentUser.uid);
       setTodos(todoData.sort((a, b) => new Date(b.created_date) - new Date(a.created_date)));
     } catch (error) {
       console.error("Error loading data:", error);
@@ -51,7 +57,7 @@ export default function TodoList() {
     }
 
     try {
-      await Todo.create(newTodo);
+      await Todo.create(currentUser.uid, newTodo);
       setNewTodo({
         title: '',
         description: '',
@@ -68,7 +74,7 @@ export default function TodoList() {
 
   const updateTodo = async (id, updates) => {
     try {
-      await Todo.update(id, updates);
+      await Todo.update(currentUser.uid, id, updates);
       loadData();
     } catch (error) {
       console.error("Error updating todo:", error);
@@ -78,7 +84,7 @@ export default function TodoList() {
   const deleteTodo = async (id) => {
     if (confirm("Are you sure you want to delete this todo?")) {
       try {
-        await Todo.delete(id);
+        await Todo.delete(currentUser.uid, id);
         loadData();
       } catch (error) {
         console.error("Error deleting todo:", error);

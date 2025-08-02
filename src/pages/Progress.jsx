@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "../entities/User";
 import { UserHabit } from "../entities/UserHabit";
 import { Habit } from "../entities/Habit";
@@ -35,6 +36,7 @@ import { format, subDays, startOfWeek, endOfWeek, eachDayOfInterval } from "date
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
 
 export default function ProgressPage() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [userHabits, setUserHabits] = useState([]);
   const [habits, setHabits] = useState([]);
@@ -43,21 +45,25 @@ export default function ProgressPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      loadData();
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
       setUser(userData);
       
-      const userHabitsData = await UserHabit.filter({ user_id: userData.id });
+      const userHabitsData = await UserHabit.filter(currentUser.uid);
       setUserHabits(userHabitsData);
       
       const habitsData = await Habit.list();
       setHabits(habitsData);
       
-      const logsData = await HabitLog.list('-date');
+      const logsData = await HabitLog.list(currentUser.uid, 'date', 'desc');
       const myHabitIds = userHabitsData.map(h => h.id);
       const myLogs = logsData.filter(log => myHabitIds.includes(log.user_habit_id));
       setHabitLogs(myLogs);

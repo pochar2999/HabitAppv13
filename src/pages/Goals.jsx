@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "../entities/User";
 import { Goal } from "../entities/Goal";
 import { Button } from "../components/ui/button";
@@ -30,6 +31,7 @@ const statusColors = {
 };
 
 export default function Goals() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [goals, setGoals] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
@@ -49,15 +51,19 @@ export default function Goals() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      loadData();
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
       setUser(userData);
       
-      const goalData = await Goal.filter({ created_by: userData.email });
+      const goalData = await Goal.filter(currentUser.uid);
       setGoals(goalData.sort((a, b) => new Date(b.created_date || 0) - new Date(a.created_date || 0)));
     } catch (error) {
       console.error("Error loading data:", error);
@@ -82,9 +88,9 @@ export default function Goals() {
       };
 
       if (editingGoal) {
-        await Goal.update(editingGoal.id, goalToSave);
+        await Goal.update(currentUser.uid, editingGoal.id, goalToSave);
       } else {
-        await Goal.create(goalToSave);
+        await Goal.create(currentUser.uid, goalToSave);
       }
 
       setNewGoal({
@@ -107,7 +113,7 @@ export default function Goals() {
   const deleteGoal = async (id) => {
     if (confirm("Are you sure you want to delete this goal?")) {
       try {
-        await Goal.delete(id);
+        await Goal.delete(currentUser.uid, id);
         loadData();
       } catch (error) {
         console.error("Error deleting goal:", error);
@@ -132,7 +138,7 @@ export default function Goals() {
   const updateGoalProgress = async (goalId, newProgress) => {
     try {
       const status = newProgress >= 100 ? 'completed' : 'active';
-      await Goal.update(goalId, { progress: newProgress, status });
+      await Goal.update(currentUser.uid, goalId, { progress: newProgress, status });
       loadData();
     } catch (error) {
       console.error("Error updating goal progress:", error);
@@ -151,7 +157,7 @@ export default function Goals() {
     };
 
     try {
-      await Goal.update(goalId, { milestones: updatedMilestones });
+      await Goal.update(currentUser.uid, goalId, { milestones: updatedMilestones });
       loadData();
     } catch (error) {
       console.error("Error updating milestone:", error);

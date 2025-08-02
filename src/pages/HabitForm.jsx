@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "../utils";
+import { useAuth } from "../contexts/AuthContext";
 import { Habit } from "../entities/Habit";
 import { UserHabit } from "../entities/UserHabit";
 import { User } from "../entities/User";
@@ -13,8 +14,8 @@ import { Checkbox } from "../components/ui/checkbox";
 import { ArrowLeft, Target, Clock, Calendar } from "lucide-react";
 
 export default function HabitForm() {
+  const { currentUser } = useAuth();
   const [habit, setHabit] = useState(null);
-  const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     target_frequency: 'daily',
     custom_frequency: {
@@ -29,14 +30,15 @@ export default function HabitForm() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      loadData();
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
-      setUser(userData);
-      
       const urlParams = new URLSearchParams(window.location.search);
       const habitId = urlParams.get('habitId');
       
@@ -61,12 +63,12 @@ export default function HabitForm() {
   };
 
   const handleSubmit = async () => {
-    if (!habit || !user) return;
+    if (!habit || !currentUser) return;
 
     try {
-      await UserHabit.create({
+      await UserHabit.create(currentUser.uid, {
         habit_id: habit.id,
-        user_id: user.id,
+        user_id: currentUser.uid,
         ...formData
       });
       

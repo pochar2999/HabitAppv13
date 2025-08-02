@@ -1,54 +1,33 @@
-import { generateId } from '../utils';
+import { firestoreService } from '../services/firestore';
 
-// Mock habit stacks data
-let mockHabitStacks = [];
 
 export const HabitStack = {
-  filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockHabitStacks];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(stack => stack.user_id === filters.user_id);
-    }
+  filter: async (userId, filters = {}) => {
+    const firestoreFilters = [];
     
     if (filters.is_active !== undefined) {
-      filtered = filtered.filter(stack => stack.is_active === filters.is_active);
+      firestoreFilters.push({ field: 'is_active', operator: '==', value: filters.is_active });
     }
     
-    return filtered;
+    return await firestoreService.getFiltered(userId, 'habitStacks', firestoreFilters);
   },
 
-  create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
+  create: async (userId, data) => {
     const newStack = {
-      id: generateId(),
       is_active: true,
       user_habit_ids: [],
       order: 0,
       ...data
     };
-    mockHabitStacks.push(newStack);
-    return newStack;
+    
+    return await firestoreService.create(userId, 'habitStacks', newStack);
   },
 
-  update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockHabitStacks.findIndex(stack => stack.id === id);
-    if (index !== -1) {
-      mockHabitStacks[index] = { ...mockHabitStacks[index], ...data };
-      return mockHabitStacks[index];
-    }
-    throw new Error('HabitStack not found');
+  update: async (userId, id, data) => {
+    return await firestoreService.update(userId, 'habitStacks', id, data);
   },
 
-  delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockHabitStacks.findIndex(stack => stack.id === id);
-    if (index !== -1) {
-      mockHabitStacks.splice(index, 1);
-      return true;
-    }
-    throw new Error('HabitStack not found');
+  delete: async (userId, id) => {
+    return await firestoreService.delete(userId, 'habitStacks', id);
   }
 };

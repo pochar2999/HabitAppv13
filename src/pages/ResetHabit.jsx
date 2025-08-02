@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "../entities/User";
 import { UserHabit } from "../entities/UserHabit";
 import { Habit } from "../entities/Habit";
@@ -10,6 +11,7 @@ import { Badge } from "../components/ui/badge";
 import { AlertTriangle, RotateCcw, Target, Trash2, RefreshCw } from "lucide-react";
 
 export default function ResetHabits() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [userHabits, setUserHabits] = useState([]);
   const [habits, setHabits] = useState([]);
@@ -18,15 +20,19 @@ export default function ResetHabits() {
   const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      loadData();
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
       setUser(userData);
       
-      const userHabitsData = await UserHabit.filter({ user_id: userData.id });
+      const userHabitsData = await UserHabit.filter(currentUser.uid);
       setUserHabits(userHabitsData);
       
       const habitsData = await Habit.list();
@@ -81,7 +87,7 @@ This action cannot be undone.`;
     try {
       // Reset each selected habit
       for (const habitId of selectedHabits) {
-        await UserHabit.update(habitId, {
+        await UserHabit.update(currentUser.uid, habitId, {
           streak_current: 0,
           streak_longest: 0,
           total_completions: 0
@@ -89,11 +95,11 @@ This action cannot be undone.`;
       }
 
       // Delete all logs for selected habits
-      const allLogs = await HabitLog.list();
+      const allLogs = await HabitLog.list(currentUser.uid);
       const logsToDelete = allLogs.filter(log => selectedHabits.has(log.user_habit_id));
       
       for (const log of logsToDelete) {
-        await HabitLog.delete(log.id);
+        await HabitLog.delete(currentUser.uid, log.id);
       }
 
       setSelectedHabits(new Set());
@@ -125,16 +131,16 @@ This action is permanent.`;
     setResetting(true);
     try {
       // Delete all logs for selected habits first
-      const allLogs = await HabitLog.list();
+      const allLogs = await HabitLog.list(currentUser.uid);
       const logsToDelete = allLogs.filter(log => selectedHabits.has(log.user_habit_id));
       
       for (const log of logsToDelete) {
-        await HabitLog.delete(log.id);
+        await HabitLog.delete(currentUser.uid, log.id);
       }
 
       // Delete the habits
       for (const habitId of selectedHabits) {
-        await UserHabit.delete(habitId);
+        await UserHabit.delete(currentUser.uid, habitId);
       }
 
       setSelectedHabits(new Set());

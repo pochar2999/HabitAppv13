@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "../entities/User";
 import { UserHabit } from "../entities/UserHabit";
 import { HabitLog } from "../entities/HabitLog";
@@ -22,6 +23,7 @@ import { motion } from "framer-motion";
 import { format } from "date-fns";
 
 export default function Home() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [userHabits, setUserHabits] = useState([]);
   const [todayLogs, setTodayLogs] = useState([]);
@@ -34,19 +36,23 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      loadData();
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
       setUser(userData);
       
-      const habits = await UserHabit.filter({ user_id: userData.id, status: "active" });
+      const habits = await UserHabit.filter(currentUser.uid, { status: "active" });
       setUserHabits(habits);
       
       const todayStr = format(new Date(), "yyyy-MM-dd");
-      const allTodayLogs = await HabitLog.filter({ date: todayStr });
+      const allTodayLogs = await HabitLog.filter(currentUser.uid, { date: todayStr });
       
       const myHabitIds = habits.map(h => h.id);
       const myTodayLogs = allTodayLogs.filter(log => myHabitIds.includes(log.user_habit_id));

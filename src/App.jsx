@@ -1,5 +1,11 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+import { useAuth } from './contexts/AuthContext'
+import ProtectedRoute from './components/auth/ProtectedRoute'
+import SignUp from './components/auth/SignUp'
+import SignIn from './components/auth/SignIn'
+import ForgotPassword from './components/auth/ForgotPassword'
 import Layout from './layout.jsx'
 import Home from './pages/Home'
 import Habits from './pages/Habits'
@@ -26,9 +32,24 @@ import QuoteVault from './pages/QuoteVault'
 import IdeaVault from './pages/IdeaVault'
 import ResetHabits from './pages/ResetHabit'
 
-function App() {
+function AppRoutes() {
+  const { currentUser } = useAuth();
+
+  // Show auth pages if user is not signed in or email not verified
+  if (!currentUser || !currentUser.emailVerified) {
+    return (
+      <Routes>
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="*" element={<SignIn />} />
+      </Routes>
+    );
+  }
+
+  // Show main app if user is signed in and email is verified
   return (
-    <Router>
+    <ProtectedRoute>
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -57,7 +78,16 @@ function App() {
           <Route path="/reset-habits" element={<ResetHabits />} />
         </Routes>
       </Layout>
-    </Router>
+    </ProtectedRoute>
+  );
+}
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
   )
 }
 

@@ -1,39 +1,24 @@
-import { generateId, getCurrentDate } from '../utils';
+import { firestoreService } from '../services/firestore';
+import { getCurrentDate } from '../utils';
 
-// Mock user habits data
-let mockUserHabits = [];
 
 export const UserHabit = {
-  list: async (orderBy = '') => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let sorted = [...mockUserHabits];
-    
-    if (orderBy === '-created_date') {
-      sorted.sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
-    }
-    
-    return sorted;
+  list: async (userId, orderByField = 'createdAt', orderDirection = 'desc') => {
+    return await firestoreService.getAll(userId, 'userHabits', orderByField, orderDirection);
   },
 
-  filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockUserHabits];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(uh => uh.user_id === filters.user_id);
-    }
+  filter: async (userId, filters = {}) => {
+    const firestoreFilters = [];
     
     if (filters.status) {
-      filtered = filtered.filter(uh => uh.status === filters.status);
+      firestoreFilters.push({ field: 'status', operator: '==', value: filters.status });
     }
     
-    return filtered;
+    return await firestoreService.getFiltered(userId, 'userHabits', firestoreFilters);
   },
 
-  create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
+  create: async (userId, data) => {
     const newUserHabit = {
-      id: generateId(),
       start_date: getCurrentDate(),
       status: 'active',
       streak_current: 0,
@@ -43,34 +28,22 @@ export const UserHabit = {
       target_frequency: 'daily',
       ...data
     };
-    mockUserHabits.push(newUserHabit);
-    return newUserHabit;
+    
+    return await firestoreService.create(userId, 'userHabits', newUserHabit);
   },
 
-  update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockUserHabits.findIndex(uh => uh.id === id);
-    if (index !== -1) {
-      mockUserHabits[index] = { ...mockUserHabits[index], ...data };
-      return mockUserHabits[index];
-    }
-    throw new Error('UserHabit not found');
+  update: async (userId, id, data) => {
+    return await firestoreService.update(userId, 'userHabits', id, data);
   },
 
-  delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockUserHabits.findIndex(uh => uh.id === id);
-    if (index !== -1) {
-      mockUserHabits.splice(index, 1);
-      return true;
-    }
-    throw new Error('UserHabit not found');
+  delete: async (userId, id) => {
+    return await firestoreService.delete(userId, 'userHabits', id);
   },
 
-  bulkCreate: async (dataArray) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const created = dataArray.map(data => ({
-      id: generateId(),
+  bulkCreate: async (userId, dataArray) => {
+    const created = [];
+    for (const data of dataArray) {
+      const newUserHabit = {
       start_date: getCurrentDate(),
       status: 'active',
       streak_current: 0,
@@ -79,8 +52,10 @@ export const UserHabit = {
       reminder_enabled: true,
       target_frequency: 'daily',
       ...data
-    }));
-    mockUserHabits.push(...created);
+      };
+      const result = await firestoreService.create(userId, 'userHabits', newUserHabit);
+      created.push(result);
+    }
     return created;
   }
 };

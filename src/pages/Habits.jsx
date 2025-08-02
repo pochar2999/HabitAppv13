@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "../entities/User";
 import { UserHabit } from "../entities/UserHabit";
 import { Habit } from "../entities/Habit";
@@ -37,6 +38,7 @@ import {
 import { format, subDays, parseISO } from "date-fns";
 
 export default function Habits() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [userHabits, setUserHabits] = useState([]);
   const [habits, setHabits] = useState([]);
@@ -62,31 +64,29 @@ export default function Habits() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      loadData();
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
       setUser(userData);
       
-      const userHabitsData = await UserHabit.filter({ 
-        user_id: userData.id, 
-        status: "active" 
-      });
+      const userHabitsData = await UserHabit.filter(currentUser.uid, { status: "active" });
       setUserHabits(userHabitsData);
       
       const habitsData = await Habit.list();
       setHabits(habitsData);
       
-      const stacksData = await HabitStack.filter({ 
-        user_id: userData.id, 
-        is_active: true 
-      });
+      const stacksData = await HabitStack.filter(currentUser.uid, { is_active: true });
       setHabitStacks(stacksData);
       
       const todayStr = format(new Date(), "yyyy-MM-dd");
-      const allTodayLogs = await HabitLog.filter({ date: todayStr });
+      const allTodayLogs = await HabitLog.filter(currentUser.uid, { date: todayStr });
       
       const myHabitIds = userHabitsData.map(h => h.id);
       const myTodayLogs = allTodayLogs.filter(log => myHabitIds.includes(log.user_habit_id));
@@ -106,12 +106,12 @@ export default function Habits() {
     try {
       if (existingLog) {
         const newCompleted = !existingLog.completed;
-        await HabitLog.update(existingLog.id, { completed: newCompleted });
+        await HabitLog.update(currentUser.uid, existingLog.id, { completed: newCompleted });
         
         // Update streak and completion counts
         await updateHabitStats(userHabit, newCompleted, existingLog.completed);
       } else {
-        await HabitLog.create({
+        await HabitLog.create(currentUser.uid, {
           user_habit_id: userHabit.id,
           date: todayStr,
           completed: true
@@ -153,7 +153,7 @@ export default function Habits() {
       }
       
       if (Object.keys(updates).length > 0) {
-        await UserHabit.update(userHabit.id, updates);
+        await UserHabit.update(currentUser.uid, userHabit.id, updates);
       }
     } catch (error) {
       console.error("Error updating habit stats:", error);
@@ -162,7 +162,7 @@ export default function Habits() {
 
   const calculateCurrentStreak = async (userHabitId) => {
     try {
-      const logs = await HabitLog.filter({ user_habit_id: userHabitId });
+      const logs = await HabitLog.filter(currentUser.uid, { user_habit_id: userHabitId });
       const completedLogs = logs.filter(log => log.completed).sort((a, b) => new Date(b.date) - new Date(a.date));
       
       if (completedLogs.length === 0) return 0;
@@ -191,7 +191,7 @@ export default function Habits() {
   const deleteHabit = async (userHabitId) => {
     if (confirm("Are you sure you want to delete this habit?")) {
       try {
-        await UserHabit.delete(userHabitId);
+        await UserHabit.delete(currentUser.uid, userHabitId);
         loadData();
       } catch (error) {
         console.error("Error deleting habit:", error);
@@ -233,7 +233,7 @@ export default function Habits() {
     if (!editingHabit) return;
     
     try {
-      await UserHabit.update(editingHabit.id, editForm);
+      await UserHabit.update(currentUser.uid, editingHabit.id, editForm);
       setShowEditDialog(false);
       setEditingHabit(null);
       loadData();
@@ -249,9 +249,9 @@ export default function Habits() {
     }
 
     try {
-      await HabitStack.create({
+      await HabitStack.create(currentUser.uid, {
         ...newStack,
-        user_id: user.id
+        user_id: currentUser.uid
       });
       
       setNewStack({

@@ -1,64 +1,41 @@
-import { generateId, getCurrentDate } from '../utils';
+import { firestoreService } from '../services/firestore';
+import { getCurrentDate } from '../utils';
 
-// Mock habit logs data
-let mockHabitLogs = [];
 
 export const HabitLog = {
-  list: async (orderBy = '') => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let sorted = [...mockHabitLogs];
-    
-    if (orderBy === '-date') {
-      sorted.sort((a, b) => new Date(b.date) - new Date(a.date));
-    }
-    
-    return sorted;
+  list: async (userId, orderByField = 'date', orderDirection = 'desc') => {
+    return await firestoreService.getAll(userId, 'habitLogs', orderByField, orderDirection);
   },
 
-  filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockHabitLogs];
+  filter: async (userId, filters = {}) => {
+    const firestoreFilters = [];
     
     if (filters.user_habit_id) {
-      filtered = filtered.filter(log => log.user_habit_id === filters.user_habit_id);
+      firestoreFilters.push({ field: 'user_habit_id', operator: '==', value: filters.user_habit_id });
     }
     
     if (filters.date) {
-      filtered = filtered.filter(log => log.date === filters.date);
+      firestoreFilters.push({ field: 'date', operator: '==', value: filters.date });
     }
     
-    return filtered;
+    return await firestoreService.getFiltered(userId, 'habitLogs', firestoreFilters, 'date', 'desc');
   },
 
-  create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
+  create: async (userId, data) => {
     const newLog = {
-      id: generateId(),
       date: getCurrentDate(),
       completed: true,
       ...data
     };
-    mockHabitLogs.push(newLog);
-    return newLog;
+    
+    return await firestoreService.create(userId, 'habitLogs', newLog);
   },
 
-  update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockHabitLogs.findIndex(log => log.id === id);
-    if (index !== -1) {
-      mockHabitLogs[index] = { ...mockHabitLogs[index], ...data };
-      return mockHabitLogs[index];
-    }
-    throw new Error('HabitLog not found');
+  update: async (userId, id, data) => {
+    return await firestoreService.update(userId, 'habitLogs', id, data);
   },
 
-  delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockHabitLogs.findIndex(log => log.id === id);
-    if (index !== -1) {
-      mockHabitLogs.splice(index, 1);
-      return true;
-    }
-    throw new Error('HabitLog not found');
+  delete: async (userId, id) => {
+    return await firestoreService.delete(userId, 'habitLogs', id);
   }
 };

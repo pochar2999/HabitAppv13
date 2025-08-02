@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "../utils";
+import { useAuth } from "../contexts/AuthContext";
 import { Habit } from "../entities/Habit";
 import { UserHabit } from "../entities/UserHabit";
 import { User } from "../entities/User";
@@ -11,18 +12,20 @@ import { Badge } from "../components/ui/badge";
 import { Search, Target, ArrowLeft, Plus } from "lucide-react";
 
 export default function HabitSelect() {
+  const { currentUser } = useAuth();
   const [habits, setHabits] = useState([]);
   const [filteredHabits, setFilteredHabits] = useState([]);
   const [userHabits, setUserHabits] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [habitType, setHabitType] = useState('build');
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadData();
+    if (currentUser) {
+      loadData();
+    }
     
     // Get type from URL params
     const urlParams = new URLSearchParams(window.location.search);
@@ -30,21 +33,20 @@ export default function HabitSelect() {
     if (type === 'break') {
       setHabitType('break');
     }
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
     filterHabits();
   }, [habits, userHabits, searchTerm, selectedCategory, habitType]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
-      setUser(userData);
-      
       const habitData = await Habit.list();
       setHabits(habitData);
       
-      const userHabitsData = await UserHabit.filter({ user_id: userData.id });
+      const userHabitsData = await UserHabit.filter(currentUser.uid);
       setUserHabits(userHabitsData);
     } catch (error) {
       console.error("Error loading data:", error);

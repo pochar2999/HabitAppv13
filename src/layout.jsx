@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "./utils";
+import { useAuth } from "./contexts/AuthContext";
 import { User } from "./entities/User";
 import { 
   Home, 
@@ -72,6 +73,7 @@ const featureItems = [
 ];
 
 export default function Layout({ children, currentPageName }) {
+  const { currentUser, logout } = useAuth();
   const [user, setUser] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -79,21 +81,27 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     loadUser();
-  }, []);
+  }, [currentUser]);
 
   const loadUser = async () => {
     try {
-      const userData = await User.me();
-      setUser(userData);
+      if (currentUser) {
+        const userData = await User.me(currentUser);
+        setUser(userData);
+      }
     } catch (error) {
-      console.log("User not authenticated");
+      console.error("Error loading user data:", error);
     }
     setLoading(false);
   };
 
   const handleLogout = async () => {
-    await User.logout();
-    setUser(null);
+    try {
+      await logout();
+      setUser(null);
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   if (loading) {
@@ -104,26 +112,9 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="max-w-md w-full mx-4">
-          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Target className="w-10 h-10 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">HabitAppV9</h1>
-            <p className="text-gray-600 mb-8">Build better habits, break bad ones</p>
-            <Button 
-              onClick={() => User.login()}
-              className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-lg font-semibold text-white"
-            >
-              Sign In to Continue
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
+  // This check is now handled by App.jsx and ProtectedRoute
+  if (!user || !currentUser) {
+    return null;
   }
 
   return (

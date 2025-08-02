@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "../entities/User";
 import { JournalEntry } from "../entities/JournalEntry";
 import { Button } from "../components/ui/button";
@@ -21,6 +22,7 @@ const moodEmojis = {
 };
 
 export default function Journal() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [entries, setEntries] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
@@ -37,15 +39,19 @@ export default function Journal() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      loadData();
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
       setUser(userData);
       
-      const entryData = await JournalEntry.filter({ created_by: userData.email });
+      const entryData = await JournalEntry.filter(currentUser.uid);
       setEntries(entryData.sort((a, b) => new Date(b.date) - new Date(a.date)));
     } catch (error) {
       console.error("Error loading data:", error);
@@ -66,9 +72,9 @@ export default function Journal() {
       };
 
       if (editingEntry) {
-        await JournalEntry.update(editingEntry.id, entryToCreate);
+        await JournalEntry.update(currentUser.uid, editingEntry.id, entryToCreate);
       } else {
-        await JournalEntry.create(entryToCreate);
+        await JournalEntry.create(currentUser.uid, entryToCreate);
       }
 
       setNewEntry({
@@ -88,7 +94,7 @@ export default function Journal() {
   const deleteEntry = async (id) => {
     if (confirm("Are you sure you want to delete this journal entry?")) {
       try {
-        await JournalEntry.delete(id);
+        await JournalEntry.delete(currentUser.uid, id);
         loadData();
       } catch (error) {
         console.error("Error deleting entry:", error);
