@@ -13,6 +13,7 @@ import { Search, Target, ArrowLeft, Plus } from "lucide-react";
 export default function HabitSelect() {
   const [habits, setHabits] = useState([]);
   const [filteredHabits, setFilteredHabits] = useState([]);
+  const [userHabits, setUserHabits] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [habitType, setHabitType] = useState('build');
@@ -33,7 +34,7 @@ export default function HabitSelect() {
 
   useEffect(() => {
     filterHabits();
-  }, [habits, searchTerm, selectedCategory, habitType]);
+  }, [habits, userHabits, searchTerm, selectedCategory, habitType]);
 
   const loadData = async () => {
     try {
@@ -42,6 +43,9 @@ export default function HabitSelect() {
       
       const habitData = await Habit.list();
       setHabits(habitData);
+      
+      const userHabitsData = await UserHabit.filter({ user_id: userData.id });
+      setUserHabits(userHabitsData);
     } catch (error) {
       console.error("Error loading data:", error);
     }
@@ -49,7 +53,13 @@ export default function HabitSelect() {
   };
 
   const filterHabits = () => {
-    let filtered = habits.filter(habit => habit.type === habitType);
+    // Get habit IDs that user already has
+    const userHabitIds = userHabits.map(uh => uh.habit_id);
+    
+    // Filter out habits that user already has
+    let filtered = habits.filter(habit => 
+      habit.type === habitType && !userHabitIds.includes(habit.id)
+    );
     
     if (searchTerm) {
       filtered = filtered.filter(habit =>

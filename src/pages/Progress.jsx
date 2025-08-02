@@ -39,8 +39,7 @@ export default function ProgressPage() {
   const [userHabits, setUserHabits] = useState([]);
   const [habits, setHabits] = useState([]);
   const [habitLogs, setHabitLogs] = useState([]);
-  const [selectedPeriod, setSelectedPeriod] = useState('week');
-  const [selectedHabit, setSelectedHabit] = useState('all');
+  const [selectedPeriod, setSelectedPeriod] = useState('7');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -78,27 +77,77 @@ export default function ProgressPage() {
     return userHabits.find(uh => uh.id === userHabitId);
   };
 
-  // Calculate stats
-  const totalHabits = userHabits.length;
-  const activeHabits = userHabits.filter(h => h.status === 'active').length;
-  const completedHabits = userHabits.filter(h => h.status === 'completed').length;
-  const totalCompletions = habitLogs.filter(log => log.completed).length;
-  const currentStreak = totalHabits > 0 ? Math.max(...userHabits.map(h => h.streak_current || 0), 0) : 0;
-  const longestStreak = totalHabits > 0 ? Math.max(...userHabits.map(h => h.streak_longest || 0), 0) : 0;
+  const getFilteredLogs = () => {
+    const days = parseInt(selectedPeriod);
+    const cutoffDate = subDays(new Date(), days - 1);
+    return habitLogs.filter(log => new Date(log.date) >= cutoffDate);
+  };
+
+  const getFilteredUserHabits = () => {
+    const days = parseInt(selectedPeriod);
+    const cutoffDate = subDays(new Date(), days - 1);
+    return userHabits.filter(uh => new Date(uh.start_date) <= cutoffDate);
+  };
+
+  // Calculate stats for selected period
+  const filteredLogs = getFilteredLogs();
+  const filteredUserHabits = getFilteredUserHabits();
+  const totalHabits = filteredUserHabits.length;
+  const activeHabits = filteredUserHabits.filter(h => h.status === 'active').length;
+  const completedHabits = filteredUserHabits.filter(h => h.status === 'completed').length;
+  const totalCompletions = filteredLogs.filter(log => log.completed).length;
+  const currentStreak = totalHabits > 0 ? Math.max(...filteredUserHabits.map(h => h.streak_current || 0), 0) : 0;
+  const longestStreak = totalHabits > 0 ? Math.max(...filteredUserHabits.map(h => h.streak_longest || 0), 0) : 0;
+
+  // Generate daily completion rate data
+  const getDailyCompletionRateData = () => {
+    const days = parseInt(selectedPeriod);
+    const dateRange = [];
+    
+    for (let i = days - 1; i >= 0; i--) {
+      const date = subDays(new Date(), i);
+      dateRange.push(date);
+    }
+    
+    return dateRange.map(date => {
+      const dateStr = format(date, 'yyyy-MM-dd');
+      const activeHabitsOnDate = filteredUserHabits.filter(uh => 
+        new Date(uh.start_date) <= date && 
+        (uh.status === 'active' || new Date(uh.start_date) <= date)
+      ).length;
+      
+      const completedOnDate = filteredLogs.filter(log => 
+        log.date === dateStr && log.completed
+      ).length;
+      
+      const completionRate = activeHabitsOnDate > 0 ? (completedOnDate / activeHabitsOnDate) * 100 : 0;
+      
+      return {
+        date: format(date, days <= 7 ? 'EEE' : 'MMM d'),
+        completionRate: Math.round(completionRate),
+        completed: completedOnDate,
+        total: activeHabitsOnDate
+      };
+    });
+  };
 
   // Generate weekly completion data
   const getWeeklyData = () => {
-    const weekStart = startOfWeek(new Date());
-    const weekEnd = endOfWeek(new Date());
-    const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
+    const days = parseInt(selectedPeriod);
+    const dateRange = [];
     
-    return weekDays.map(day => {
-      const dayStr = format(day, 'yyyy-MM-dd');
-      const dayLogs = habitLogs.filter(log => log.date === dayStr && log.completed);
+    for (let i = days - 1; i >= 0; i--) {
+      const date = subDays(new Date(), i);
+      dateRange.push(date);
+    }
+    
+    return dateRange.map(date => {
+      const dateStr = format(date, 'yyyy-MM-dd');
+      const dayLogs = filteredLogs.filter(log => log.date === dateStr && log.completed);
       return {
-        day: format(day, 'EEE'),
+        day: format(date, days <= 7 ? 'EEE' : 'MMM d'),
         completions: dayLogs.length,
-        date: dayStr
+        date: dateStr
       };
     });
   };
@@ -107,10 +156,10 @@ export default function ProgressPage() {
   const getHabitDistribution = () => {
     const distribution = {};
     
-    userHabits.forEach(userHabit => {
+    filteredUserHabits.forEach(userHabit => {
       const habitDetails = getHabitDetails(userHabit.id);
       if (habitDetails) {
-        const completions = habitLogs.filter(log => 
+        const completions = filteredLogs.filter(log => 
           log.user_habit_id === userHabit.id && log.completed
         ).length;
         
@@ -118,28 +167,41 @@ export default function ProgressPage() {
       }
     });
     
-    return Object.entries(distribution).map(([name, value], index) => ({
-      name,
-      value,
-      color: COLORS[index % COLORS.length]
-    }));
+    return Object.entries(distribution)
+      .filter(([name, value]) => value > 0)
+      .map(([name, value], index) => ({
+        name,
+        value,
+        color: COLORS[index % COLORS.length]
+      }));
   };
 
-  // Generate streak data
-  const getStreakData = () => {
-    return userHabits.map(userHabit => {
+  // Generate individual habit progress data
+  const getIndividualHabitProgress = () => {
+    return filteredUserHabits.map(userHabit => {
       const habitDetails = getHabitDetails(userHabit.id);
+      const habitLogs = filteredLogs.filter(log => log.user_habit_id === userHabit.id && log.completed);
+      const startDate = new Date(userHabit.start_date);
+      const endDate = new Date();
+      const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+      const completionRate = totalDays > 0 ? Math.round((habitLogs.length / totalDays) * 100) : 0;
+      
       return {
-        name: habitDetails?.title || 'Unknown',
-        current: userHabit.streak_current || 0,
-        longest: userHabit.streak_longest || 0
+        userHabit,
+        habitDetails,
+        currentStreak: userHabit.streak_current || 0,
+        longestStreak: userHabit.streak_longest || 0,
+        totalCompletions: userHabit.total_completions || 0,
+        completionRate,
+        completionsInPeriod: habitLogs.length
       };
     });
   };
 
+  const dailyCompletionRateData = getDailyCompletionRateData();
   const weeklyData = getWeeklyData();
   const habitDistribution = getHabitDistribution();
-  const streakData = getStreakData();
+  const individualProgress = getIndividualHabitProgress();
 
   if (loading) {
     return (
@@ -158,13 +220,12 @@ export default function ProgressPage() {
         </div>
         <div className="flex gap-2">
           <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="week">This Week</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-              <SelectItem value="year">This Year</SelectItem>
+              <SelectItem value="7">Last 7 Days</SelectItem>
+              <SelectItem value="30">Last 30 Days</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -204,12 +265,42 @@ export default function ProgressPage() {
 
       {totalHabits > 0 ? (
         <>
+          {/* Daily Completion Rate Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5" />
+                Daily Completion Rate
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={dailyCompletionRateData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
+                  <Tooltip 
+                    formatter={(value, name) => [`${value}%`, 'Completion Rate']}
+                    labelFormatter={(label) => `Date: ${label}`}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="completionRate" 
+                    stroke="#3B82F6" 
+                    strokeWidth={3}
+                    dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
           {/* Weekly Completion Chart */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" />
-                Weekly Completions
+                Daily Completions
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -227,103 +318,124 @@ export default function ProgressPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Habit Distribution */}
+            {habitDistribution.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="w-5 h-5" />
+                    Habit Completions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={habitDistribution}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, value }) => `${name}: ${value}`}
+                      >
+                        {habitDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Average Completion Rate */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
-                  Habit Completions
+                  Average Completion Rate
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={habitDistribution}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, value }) => `${name}: ${value}`}
-                    >
-                      {habitDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Streak Comparison */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Flame className="w-5 h-5" />
-                  Streak Comparison
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={streakData} layout="horizontal">
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" />
-                    <YAxis dataKey="name" type="category" width={100} />
-                    <Tooltip />
-                    <Bar dataKey="current" fill="#F59E0B" name="Current Streak" />
-                    <Bar dataKey="longest" fill="#10B981" name="Longest Streak" />
-                  </BarChart>
-                </ResponsiveContainer>
+              <CardContent className="flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-6xl font-bold text-blue-600 mb-2">
+                    {dailyCompletionRateData.length > 0 
+                      ? Math.round(dailyCompletionRateData.reduce((sum, day) => sum + day.completionRate, 0) / dailyCompletionRateData.length)
+                      : 0}%
+                  </div>
+                  <p className="text-gray-600">Average completion rate over {selectedPeriod} days</p>
+                </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Individual Habit Progress */}
+          {/* Individual Habit Progress Boxes */}
           <Card>
             <CardHeader>
               <CardTitle>Individual Habit Progress</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {userHabits.map(userHabit => {
-                const habitDetails = getHabitDetails(userHabit.id);
-                if (!habitDetails) return null;
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {individualProgress.map(({ userHabit, habitDetails, currentStreak, longestStreak, totalCompletions, completionRate, completionsInPeriod }) => {
+                  if (!habitDetails) return null;
 
-                const completions = habitLogs.filter(log => 
-                  log.user_habit_id === userHabit.id && log.completed
-                ).length;
-                
-                const progressPercentage = userHabit.total_completions > 0 
-                  ? Math.min((completions / (userHabit.total_completions + 10)) * 100, 100)
-                  : 0;
-
-                return (
-                  <div key={userHabit.id} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">{habitDetails.icon}</span>
-                        <div>
-                          <h4 className="font-medium">{habitDetails.title}</h4>
-                          <p className="text-sm text-gray-500">
-                            {completions} completions • {userHabit.streak_current || 0} day streak
-                          </p>
+                  return (
+                    <Card key={userHabit.id} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="text-2xl">{habitDetails.icon}</span>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900">{habitDetails.title}</h4>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs">
+                                {habitDetails.category}
+                              </Badge>
+                              <Badge className={`text-xs ${
+                                habitDetails.type === 'build' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {habitDetails.type}
+                              </Badge>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">{habitDetails.category}</Badge>
-                        <Badge className={
-                          habitDetails.type === 'build' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
-                        }>
-                          {habitDetails.type}
-                        </Badge>
-                      </div>
-                    </div>
-                    <Progress value={progressPercentage} className="h-2" />
-                  </div>
-                );
-              })}
+                        
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">Completion Rate</span>
+                            <span className="font-semibold">{completionRate}%</span>
+                          </div>
+                          <Progress value={completionRate} className="h-2" />
+                          
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-orange-600">{currentStreak}</div>
+                              <div className="text-gray-600">Current Streak</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-purple-600">{longestStreak}</div>
+                              <div className="text-gray-600">Best Streak</div>
+                            </div>
+                          </div>
+                          
+                          <div className="pt-2 border-t border-gray-200">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">Total Completions:</span>
+                              <span className="font-medium">{totalCompletions}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">In {selectedPeriod} days:</span>
+                              <span className="font-medium">{completionsInPeriod}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
             </CardContent>
           </Card>
         </>
