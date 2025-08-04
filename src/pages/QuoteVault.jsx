@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "../entities/User";
 import { Quote } from "../entities/Quote";
 import { Button } from "../components/ui/button";
@@ -22,6 +23,7 @@ const categoryColors = {
 };
 
 export default function QuoteVault() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [quotes, setQuotes] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
@@ -37,12 +39,21 @@ export default function QuoteVault() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      setLoading(false);
+      loadData().catch(console.error);
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
+      if (!userData) {
+        console.warn("User data is null, cannot load dependent data.");
+        return;
+      }
       setUser(userData);
       
       const quoteData = await Quote.filter({ user_id: userData.id });

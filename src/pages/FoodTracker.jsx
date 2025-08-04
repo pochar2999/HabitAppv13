@@ -49,12 +49,21 @@ export default function FoodTracker() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      setLoading(false);
+      loadData().catch(console.error);
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
+      if (!userData) {
+        console.warn("User data is null, cannot load dependent data.");
+        return;
+      }
       setUser(userData);
       
       const mealData = await MealEntry.filter({ user_id: userData.id });

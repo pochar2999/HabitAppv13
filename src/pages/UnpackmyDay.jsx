@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "../entities/User";
 import { DailyReflection } from "../entities/DailyReflection";
 import { Button } from "../components/ui/button";
@@ -37,6 +38,7 @@ const reflectionQuestions = [
 ];
 
 export default function UnpackDay() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [reflections, setReflections] = useState([]);
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -51,16 +53,25 @@ export default function UnpackDay() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      setLoading(false);
+      loadData().catch(console.error);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     loadReflectionForDate(selectedDate);
   }, [selectedDate, reflections]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
+      if (!userData) {
+        console.warn("User data is null, cannot load dependent data.");
+        return;
+      }
       setUser(userData);
       
       const reflectionData = await DailyReflection.filter({ user_id: userData.id });

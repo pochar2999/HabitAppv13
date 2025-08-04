@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "../entities/User";
 import { Semester } from "../entities/Semester";
 import { Course } from "../entities/Course";
@@ -12,6 +13,7 @@ import SchoolStudyTracker from "../components/school/SchoolStudyTracker";
 import { GraduationCap } from "lucide-react";
 
 export default function School() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [semesters, setSemesters] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -21,12 +23,21 @@ export default function School() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      setLoading(false);
+      loadData().catch(console.error);
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
+      if (!userData) {
+        console.warn("User data is null, cannot load dependent data.");
+        return;
+      }
       setUser(userData);
       
       const semesterData = await Semester.filter({ user_id: userData.id });

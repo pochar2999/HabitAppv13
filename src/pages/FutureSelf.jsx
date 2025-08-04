@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "../entities/User";
 import { FutureLetter } from "../entities/FutureLetter";
 import { Button } from "../components/ui/button";
@@ -12,6 +13,7 @@ import { Plus, Mail, Calendar, Lock, Unlock, Clock } from "lucide-react";
 import { format, isAfter, isBefore } from "date-fns";
 
 export default function FutureSelf() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [letters, setLetters] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
@@ -23,12 +25,21 @@ export default function FutureSelf() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      setLoading(false);
+      loadData().catch(console.error);
+    }
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
+      if (!userData) {
+        console.warn("User data is null, cannot load dependent data.");
+        return;
+      }
       setUser(userData);
       
       const letterData = await FutureLetter.filter({ user_id: userData.id });
