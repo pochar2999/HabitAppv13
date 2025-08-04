@@ -14,18 +14,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { ArrowLeft, Clock, Target, Lightbulb, CheckCircle } from "lucide-react";
 
 export default function HabitDetail() {
+  const { currentUser } = useAuth();
   const [habit, setHabit] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadData();
+    if (currentUser) {
+      loadData();
+    }
   }, []);
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
       setUser(userData);
       
       // Get habit ID from URL params (in a real app, you'd use useParams)

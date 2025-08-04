@@ -13,6 +13,7 @@ import { Plus, Calendar as CalendarIcon, Clock, MapPin, Edit, Trash2 } from "luc
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from "date-fns";
 
 export default function Calendar() {
+  const { currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -32,15 +33,22 @@ export default function Calendar() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
+    if (currentUser) {
+      // Load data without blocking the UI
+      setLoading(false);
+      loadData().catch(console.error);
+    }
   }, []);
+  }, [currentUser]);
 
   const loadData = async () => {
+    if (!currentUser) return;
+    
     try {
-      const userData = await User.me();
+      const userData = await User.me(currentUser);
       setUser(userData);
       
-      const eventData = await CalendarEvent.filter({ user_id: userData.id });
+      const eventData = await CalendarEvent.filter({ user_id: currentUser.uid });
       setEvents(eventData);
     } catch (error) {
       console.error("Error loading data:", error);
@@ -57,7 +65,7 @@ export default function Calendar() {
     try {
       await CalendarEvent.create({
         ...newEvent,
-        user_id: user.id
+        user_id: currentUser.uid
       });
       setNewEvent({
         title: '',
