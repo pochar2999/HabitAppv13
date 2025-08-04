@@ -251,8 +251,8 @@ export default function Layout({ children, currentPageName }) {
                     </AvatarFallback>
                   </Avatar>
                 </Button>
-                    <p className="font-semibold">{displayUser.full_name || "User"}</p>
-                    <p className="text-sm text-gray-500">{displayUser.email}</p>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
                 <div className="px-3 py-2 border-b">
                   <p className="font-semibold">{displayUser.full_name || "User"}</p>
                   <p className="text-sm text-gray-500">{displayUser.email}</p>
