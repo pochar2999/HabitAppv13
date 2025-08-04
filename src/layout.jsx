@@ -432,14 +432,14 @@ export default function Layout({ children, currentPageName }) {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="w-full justify-start p-3">
                     <Avatar className="h-8 w-8 mr-3">
-                      <AvatarImage src={user.profile_picture} />
+                      <AvatarImage src={displayUser.profile_picture} />
                       <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                        {user.full_name?.[0] || user.email?.[0]}
+                        {displayUser.full_name?.[0] || displayUser.email?.[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 text-left">
-                      <p className="font-semibold">{user.full_name || "User"}</p>
-                      <p className="text-sm text-gray-500">{user.email}</p>
+                      <p className="font-semibold">{displayUser.full_name || "User"}</p>
+                      <p className="text-sm text-gray-500">{displayUser.email}</p>
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
