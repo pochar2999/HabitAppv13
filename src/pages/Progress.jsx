@@ -59,7 +59,7 @@ export default function ProgressPage() {
       const userData = await User.me(currentUser);
       setUser(userData);
       
-      const userHabitsData = await UserHabit.filter(currentUser.uid);
+      const userHabitsData = await UserHabit.filter(currentUser.uid, { status: 'active' });
       setUserHabits(userHabitsData);
       
       const habitsData = await Habit.list();
@@ -94,14 +94,16 @@ export default function ProgressPage() {
   const getFilteredUserHabits = () => {
     const days = parseInt(selectedPeriod);
     const cutoffDate = subDays(new Date(), days - 1);
-    return userHabits.filter(uh => new Date(uh.start_date) <= cutoffDate);
+    return userHabits.filter(uh => 
+      uh.status === 'active' && new Date(uh.start_date) <= new Date()
+    );
   };
 
   // Calculate stats for selected period
   const filteredLogs = getFilteredLogs();
   const filteredUserHabits = getFilteredUserHabits();
   const totalHabits = filteredUserHabits.length;
-  const activeHabits = filteredUserHabits.filter(h => h.status === 'active').length;
+  const activeHabits = filteredUserHabits.length; // All filtered habits are active
   const completedHabits = filteredUserHabits.filter(h => h.status === 'completed').length;
   const totalCompletions = filteredLogs.filter(log => log.completed).length;
   const currentStreak = totalHabits > 0 ? Math.max(...filteredUserHabits.map(h => h.streak_current || 0), 0) : 0;

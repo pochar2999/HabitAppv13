@@ -110,8 +110,8 @@ export default function Habits() {
         const newCompleted = !existingLog.completed;
         await HabitLog.update(currentUser.uid, existingLog.id, { completed: newCompleted });
         
-        // Update streak and completion counts
-        await updateHabitStats(userHabit, newCompleted, existingLog.completed);
+        // Update streak and completion counts with proper calculation
+        await updateHabitStats(userHabit, newCompleted, existingLog.completed, todayStr);
       } else {
         await HabitLog.create(currentUser.uid, {
           user_habit_id: userHabit.id,
@@ -119,8 +119,8 @@ export default function Habits() {
           completed: true
         });
         
-        // Update streak and completion counts
-        await updateHabitStats(userHabit, true, false);
+        // Update streak and completion counts with proper calculation
+        await updateHabitStats(userHabit, true, false, todayStr);
       }
       loadData();
     } catch (error) {
@@ -128,14 +128,14 @@ export default function Habits() {
     }
   };
 
-  const updateHabitStats = async (userHabit, newCompleted, wasCompleted) => {
+  const updateHabitStats = async (userHabit, newCompleted, wasCompleted, dateStr) => {
     try {
       let updates = {};
       
       if (newCompleted && !wasCompleted) {
         // Habit was just completed
         const newTotalCompletions = (userHabit.total_completions || 0) + 1;
-        const newCurrentStreak = await calculateCurrentStreak(userHabit.id);
+        const newCurrentStreak = await calculateCurrentStreak(userHabit.id, dateStr);
         const newLongestStreak = Math.max(newCurrentStreak, userHabit.streak_longest || 0);
         
         updates = {
@@ -146,7 +146,7 @@ export default function Habits() {
       } else if (!newCompleted && wasCompleted) {
         // Habit was unchecked
         const newTotalCompletions = Math.max((userHabit.total_completions || 0) - 1, 0);
-        const newCurrentStreak = await calculateCurrentStreak(userHabit.id);
+        const newCurrentStreak = await calculateCurrentStreak(userHabit.id, dateStr);
         
         updates = {
           total_completions: newTotalCompletions,
@@ -162,7 +162,7 @@ export default function Habits() {
     }
   };
 
-  const calculateCurrentStreak = async (userHabitId) => {
+  const calculateCurrentStreak = async (userHabitId, currentDateStr) => {
     try {
       const logs = await HabitLog.filter(currentUser.uid, { user_habit_id: userHabitId });
       const completedLogs = logs.filter(log => log.completed).sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -170,14 +170,16 @@ export default function Habits() {
       if (completedLogs.length === 0) return 0;
       
       let streak = 0;
-      let currentDate = new Date();
+      let checkDate = new Date(currentDateStr);
       
-      for (let i = 0; i < completedLogs.length; i++) {
-        const logDate = new Date(completedLogs[i].date);
-        const expectedDate = subDays(currentDate, i);
+      // Start from today and work backwards
+      while (true) {
+        const checkDateStr = format(checkDate, 'yyyy-MM-dd');
+        const logForDate = completedLogs.find(log => log.date === checkDateStr);
         
-        if (format(logDate, 'yyyy-MM-dd') === format(expectedDate, 'yyyy-MM-dd')) {
+        if (logForDate && logForDate.completed) {
           streak++;
+          checkDate = subDays(checkDate, 1);
         } else {
           break;
         }
