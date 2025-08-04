@@ -80,32 +80,55 @@ export default function Layout({ children, currentPageName }) {
   const location = useLocation();
 
   useEffect(() => {
-    loadUser();
+    // Load user data without blocking the UI
+    if (currentUser) {
+      loadUser();
+    }
   }, [currentUser]);
 
   const loadUser = async () => {
+    // Set basic user data immediately for faster UI rendering
+    if (currentUser && !user) {
+      setUser({
+        id: currentUser.uid,
+        email: currentUser.email,
+        full_name: currentUser.displayName || 'User',
+        profile_picture: currentUser.photoURL || null,
+        emailVerified: true,
+        loading: true
+      });
+    }
+    
     try {
       if (currentUser) {
         const userData = await User.me(currentUser);
-        setUser(userData);
+        setUser(prev => ({ ...userData, loading: false }));
       }
     } catch (error) {
       console.error("Error loading user data:", error);
       
-      // If there's an error loading user data, create a fallback user object
+      // Update with offline status but don't block the UI
       if (currentUser) {
-        setUser({
+        setUser(prev => ({
+          ...prev,
           id: currentUser.uid,
           email: currentUser.email,
           full_name: currentUser.displayName || 'User',
           profile_picture: currentUser.photoURL || null,
           emailVerified: true,
-          offline: true
-        });
+          offline: true,
+          loading: false
+        }));
       }
     }
-    setLoading(false);
   };
+
+  // Set loading to false immediately after auth check
+  useEffect(() => {
+    if (currentUser) {
+      setLoading(false);
+    }
+  }, [currentUser]);
 
   const handleLogout = async () => {
     try {
@@ -116,7 +139,7 @@ export default function Layout({ children, currentPageName }) {
     }
   };
 
-  if (loading) {
+  if (loading && !currentUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -125,9 +148,18 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // This check is now handled by App.jsx and ProtectedRoute
-  if (!user || !currentUser) {
+  if (!currentUser) {
     return null;
   }
+  
+  // Show layout immediately with basic user data
+  const displayUser = user || {
+    id: currentUser.uid,
+    email: currentUser.email,
+    full_name: currentUser.displayName || 'User',
+    profile_picture: currentUser.photoURL || null,
+    emailVerified: true
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -213,17 +245,17 @@ export default function Layout({ children, currentPageName }) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.profile_picture} />
+                    <AvatarImage src={displayUser.profile_picture} />
                     <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm">
-                      {user.full_name?.[0] || user.email?.[0]}
+                      {displayUser.full_name?.[0] || displayUser.email?.[0]}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64">
+                    <p className="font-semibold">{displayUser.full_name || "User"}</p>
+                    <p className="text-sm text-gray-500">{displayUser.email}</p>
                 <div className="px-3 py-2 border-b">
-                  <p className="font-semibold">{user.full_name || "User"}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="font-semibold">{displayUser.full_name || "User"}</p>
+                  <p className="text-sm text-gray-500">{displayUser.email}</p>
                 </div>
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="w-4 h-4 mr-2" />
@@ -272,14 +304,14 @@ export default function Layout({ children, currentPageName }) {
             <div className="p-4">
               <div className="flex items-center gap-3 py-4 border-b border-gray-200">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={user.profile_picture} />
+                  <AvatarImage src={displayUser.profile_picture} />
                   <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                    {user.full_name?.[0] || user.email?.[0]}
+                    {displayUser.full_name?.[0] || displayUser.email?.[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-semibold">{user.full_name || "User"}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="font-semibold">{displayUser.full_name || "User"}</p>
+                  <p className="text-sm text-gray-500">{displayUser.email}</p>
                 </div>
               </div>
 

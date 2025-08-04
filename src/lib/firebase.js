@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator, enableNetwork, disableNetwork } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -16,12 +16,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const analytics = getAnalytics(app);
+
+// Initialize analytics only in production
+export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+
 export const googleProvider = new GoogleAuthProvider();
 
 // Configure Google provider
 googleProvider.setCustomParameters({
   prompt: 'select_account'
 });
+
+// Enable offline persistence and better error handling
+try {
+  enableNetwork(db).catch(error => {
+    console.warn('Firebase network enable failed:', error);
+  });
+} catch (error) {
+  console.warn('Firebase initialization warning:', error);
+}
 
 export default app;

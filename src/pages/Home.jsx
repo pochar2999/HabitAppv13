@@ -37,12 +37,16 @@ export default function Home() {
 
   useEffect(() => {
     if (currentUser) {
-      loadData();
+      // Load data without blocking the UI
+      loadData().catch(console.error);
     }
   }, [currentUser]);
 
   const loadData = async () => {
     if (!currentUser) return;
+    
+    // Set loading to false immediately to show the UI
+    setLoading(false);
     
     try {
       const userData = await User.me(currentUser);
@@ -70,8 +74,8 @@ export default function Home() {
       });
     } catch (error) {
       console.error("Error loading data:", error);
+      // Don't block the UI on error - just log it
     }
-    setLoading(false);
   };
 
   const dailyProgressPercentage = stats.totalHabits > 0 
@@ -80,8 +84,18 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div className="text-center">
+          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            Welcome back!
+          </h1>
+          <p className="text-xl text-gray-600 mb-8">
+            Loading your habit data...
+          </p>
+        </div>
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
       </div>
     );
   }

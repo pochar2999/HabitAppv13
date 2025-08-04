@@ -52,7 +52,9 @@ export default function Goals() {
 
   useEffect(() => {
     if (currentUser) {
-      loadData();
+      // Load data without blocking the UI
+      setLoading(false);
+      loadData().catch(console.error);
     }
   }, [currentUser]);
 
@@ -67,8 +69,8 @@ export default function Goals() {
       setGoals(goalData.sort((a, b) => new Date(b.created_date || 0) - new Date(a.created_date || 0)));
     } catch (error) {
       console.error("Error loading data:", error);
+      // Don't block the UI on error
     }
-    setLoading(false);
   };
 
   const createGoal = async () => {

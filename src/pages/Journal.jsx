@@ -40,7 +40,9 @@ export default function Journal() {
 
   useEffect(() => {
     if (currentUser) {
-      loadData();
+      // Load data without blocking the UI
+      setLoading(false);
+      loadData().catch(console.error);
     }
   }, [currentUser]);
 
@@ -55,8 +57,8 @@ export default function Journal() {
       setEntries(entryData.sort((a, b) => new Date(b.date) - new Date(a.date)));
     } catch (error) {
       console.error("Error loading data:", error);
+      // Don't block the UI on error
     }
-    setLoading(false);
   };
 
   const createEntry = async () => {

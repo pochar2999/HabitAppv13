@@ -21,7 +21,6 @@ export const firestoreService = {
   // Create a document
   create: async (userId, collectionName, data) => {
     try {
-      await enableNetwork(db);
       const userCollectionRef = collection(db, 'users', userId, collectionName);
       const docRef = await addDoc(userCollectionRef, {
         ...data,
@@ -38,7 +37,6 @@ export const firestoreService = {
   // Get all documents from a collection
   getAll: async (userId, collectionName, orderByField = 'createdAt', orderDirection = 'desc') => {
     try {
-      await enableNetwork(db);
       const userCollectionRef = collection(db, 'users', userId, collectionName);
       const q = query(userCollectionRef, orderBy(orderByField, orderDirection));
       const querySnapshot = await getDocs(q);
@@ -63,7 +61,6 @@ export const firestoreService = {
   // Get documents with filter
   getFiltered: async (userId, collectionName, filters = [], orderByField = 'createdAt', orderDirection = 'desc') => {
     try {
-      await enableNetwork(db);
       const userCollectionRef = collection(db, 'users', userId, collectionName);
       let q = query(userCollectionRef);
       
@@ -99,7 +96,6 @@ export const firestoreService = {
   // Get a single document
   getById: async (userId, collectionName, docId) => {
     try {
-      await enableNetwork(db);
       const docRef = doc(db, 'users', userId, collectionName, docId);
       const docSnap = await getDoc(docRef);
       
@@ -124,7 +120,6 @@ export const firestoreService = {
   // Update a document
   update: async (userId, collectionName, docId, data) => {
     try {
-      await enableNetwork(db);
       const docRef = doc(db, 'users', userId, collectionName, docId);
       await updateDoc(docRef, {
         ...data,
@@ -140,7 +135,6 @@ export const firestoreService = {
   // Delete a document
   delete: async (userId, collectionName, docId) => {
     try {
-      await enableNetwork(db);
       const docRef = doc(db, 'users', userId, collectionName, docId);
       await deleteDoc(docRef);
       return true;

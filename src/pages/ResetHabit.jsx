@@ -21,7 +21,9 @@ export default function ResetHabits() {
 
   useEffect(() => {
     if (currentUser) {
-      loadData();
+      // Load data without blocking the UI
+      setLoading(false);
+      loadData().catch(console.error);
     }
   }, [currentUser]);
 
@@ -39,8 +41,8 @@ export default function ResetHabits() {
       setHabits(habitsData);
     } catch (error) {
       console.error("Error loading data:", error);
+      // Don't block the UI on error
     }
-    setLoading(false);
   };
 
   const getHabitDetails = (userHabit) => {
