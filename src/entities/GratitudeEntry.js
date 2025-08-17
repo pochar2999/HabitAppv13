@@ -1,39 +1,16 @@
-import { generateId, getCurrentDate } from '../utils';
-
-// Mock gratitude entry data
-let mockGratitudeEntries = [];
-
+// GratitudeEntry entity - now returns empty data since backend is removed
 export const GratitudeEntry = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockGratitudeEntries];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(entry => entry.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newEntry = {
-      id: generateId(),
-      color: 'yellow',
-      date: getCurrentDate(),
-      ...data
-    };
-    mockGratitudeEntries.push(newEntry);
-    return newEntry;
+    console.warn('Backend removed - GratitudeEntry.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockGratitudeEntries.findIndex(entry => entry.id === id);
-    if (index !== -1) {
-      mockGratitudeEntries.splice(index, 1);
-      return true;
-    }
-    throw new Error('GratitudeEntry not found');
+    console.warn('Backend removed - GratitudeEntry.delete called but no data will be saved');
+    return true;
   }
 };

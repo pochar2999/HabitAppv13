@@ -1,30 +1,11 @@
-import { generateId, getCurrentDate } from '../utils';
-
-// Mock workout session data
-let mockWorkoutSessions = [];
-
+// WorkoutSession entity - now returns empty data since backend is removed
 export const WorkoutSession = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockWorkoutSessions];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(session => session.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newSession = {
-      id: generateId(),
-      date: getCurrentDate(),
-      exercises: [],
-      duration_minutes: 0,
-      ...data
-    };
-    mockWorkoutSessions.push(newSession);
-    return newSession;
+    console.warn('Backend removed - WorkoutSession.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   }
 };

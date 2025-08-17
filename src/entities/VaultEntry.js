@@ -1,47 +1,21 @@
-import { generateId } from '../utils';
-
-// Mock vault entry data
-let mockVaultEntries = [];
-
+// VaultEntry entity - now returns empty data since backend is removed
 export const VaultEntry = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockVaultEntries];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(entry => entry.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newEntry = {
-      id: generateId(),
-      ...data
-    };
-    mockVaultEntries.push(newEntry);
-    return newEntry;
+    console.warn('Backend removed - VaultEntry.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockVaultEntries.findIndex(entry => entry.id === id);
-    if (index !== -1) {
-      mockVaultEntries[index] = { ...mockVaultEntries[index], ...data };
-      return mockVaultEntries[index];
-    }
-    throw new Error('VaultEntry not found');
+    console.warn('Backend removed - VaultEntry.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockVaultEntries.findIndex(entry => entry.id === id);
-    if (index !== -1) {
-      mockVaultEntries.splice(index, 1);
-      return true;
-    }
-    throw new Error('VaultEntry not found');
+    console.warn('Backend removed - VaultEntry.delete called but no data will be saved');
+    return true;
   }
 };

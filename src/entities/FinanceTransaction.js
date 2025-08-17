@@ -1,28 +1,11 @@
-import { generateId, getCurrentDate } from '../utils';
-
-// Mock finance transaction data
-let mockFinanceTransactions = [];
-
+// FinanceTransaction entity - now returns empty data since backend is removed
 export const FinanceTransaction = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockFinanceTransactions];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(transaction => transaction.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newTransaction = {
-      id: generateId(),
-      date: getCurrentDate(),
-      ...data
-    };
-    mockFinanceTransactions.push(newTransaction);
-    return newTransaction;
+    console.warn('Backend removed - FinanceTransaction.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   }
 };

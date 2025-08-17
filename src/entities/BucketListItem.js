@@ -1,48 +1,21 @@
-import { generateId, getCurrentDate } from '../utils';
-
-// Mock bucket list data
-let mockBucketListItems = [];
-
+// BucketListItem entity - now returns empty data since backend is removed
 export const BucketListItem = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockBucketListItems];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(item => item.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newItem = {
-      id: generateId(),
-      completed: false,
-      ...data
-    };
-    mockBucketListItems.push(newItem);
-    return newItem;
+    console.warn('Backend removed - BucketListItem.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockBucketListItems.findIndex(item => item.id === id);
-    if (index !== -1) {
-      mockBucketListItems[index] = { ...mockBucketListItems[index], ...data };
-      return mockBucketListItems[index];
-    }
-    throw new Error('BucketListItem not found');
+    console.warn('Backend removed - BucketListItem.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockBucketListItems.findIndex(item => item.id === id);
-    if (index !== -1) {
-      mockBucketListItems.splice(index, 1);
-      return true;
-    }
-    throw new Error('BucketListItem not found');
+    console.warn('Backend removed - BucketListItem.delete called but no data will be saved');
+    return true;
   }
 };

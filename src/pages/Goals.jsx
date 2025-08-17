@@ -18,7 +18,7 @@ import { format } from "date-fns";
 const categoryColors = {
   health: 'bg-green-100 text-green-800 border-green-200',
   career: 'bg-blue-100 text-blue-800 border-blue-200',
-  finance: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  finance: 'bg-purple-100 text-purple-800 border-purple-200',
   relationships: 'bg-pink-100 text-pink-800 border-pink-200',
   personal: 'bg-purple-100 text-purple-800 border-purple-200',
   education: 'bg-indigo-100 text-indigo-800 border-indigo-200'

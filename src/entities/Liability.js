@@ -1,49 +1,21 @@
-import { generateId } from '../utils';
-
-// Mock liability data
-let mockLiabilities = [];
-
+// Liability entity - now returns empty data since backend is removed
 export const Liability = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockLiabilities];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(liability => liability.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newLiability = {
-      id: generateId(),
-      interest_rate: 0,
-      ...data
-    };
-    mockLiabilities.push(newLiability);
-    return newLiability;
+    console.warn('Backend removed - Liability.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockLiabilities.findIndex(liability => liability.id === id);
-    if (index !== -1) {
-      mockLiabilities[index] = { ...mockLiabilities[index], ...data };
-      return mockLiabilities[index];
-    }
-    throw new Error('Liability not found');
+    console.warn('Backend removed - Liability.update called but no data will be saved');
+    return { id, ...data };
   },
 
   bulkCreate: async (dataArray) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const created = dataArray.map(data => ({
-      id: generateId(),
-      interest_rate: 0,
-      ...data
-    }));
-    mockLiabilities.push(...created);
-    return created;
+    console.warn('Backend removed - Liability.bulkCreate called but no data will be saved');
+    return dataArray.map(data => ({ id: 'mock_id', ...data }));
   }
 };

@@ -1,47 +1,21 @@
-import { generateId } from '../utils';
-
-// Mock course data
-let mockCourses = [];
-
+// Course entity - now returns empty data since backend is removed
 export const Course = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockCourses];
-    
-    if (filters.semester_id) {
-      filtered = filtered.filter(course => course.semester_id === filters.semester_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newCourse = {
-      id: generateId(),
-      ...data
-    };
-    mockCourses.push(newCourse);
-    return newCourse;
+    console.warn('Backend removed - Course.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockCourses.findIndex(course => course.id === id);
-    if (index !== -1) {
-      mockCourses[index] = { ...mockCourses[index], ...data };
-      return mockCourses[index];
-    }
-    throw new Error('Course not found');
+    console.warn('Backend removed - Course.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockCourses.findIndex(course => course.id === id);
-    if (index !== -1) {
-      mockCourses.splice(index, 1);
-      return true;
-    }
-    throw new Error('Course not found');
+    console.warn('Backend removed - Course.delete called but no data will be saved');
+    return true;
   }
 };

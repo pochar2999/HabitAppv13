@@ -1,61 +1,30 @@
-import { firestoreService } from '../services/firestore';
-import { getCurrentDate } from '../utils';
-
-
+// UserHabit entity - now returns empty data since backend is removed
 export const UserHabit = {
   list: async (userId, orderByField = 'createdAt', orderDirection = 'desc') => {
-    return await firestoreService.getAll(userId, 'userHabits', orderByField, orderDirection);
+    return [];
   },
 
   filter: async (userId, filters = {}) => {
-    const firestoreFilters = [];
-    
-    if (filters.status) {
-      firestoreFilters.push({ field: 'status', operator: '==', value: filters.status });
-    }
-    
-    return await firestoreService.getFiltered(userId, 'userHabits', firestoreFilters);
+    return [];
   },
 
   create: async (userId, data) => {
-    const newUserHabit = {
-      start_date: getCurrentDate(),
-      status: 'active',
-      streak_current: 0,
-      streak_longest: 0,
-      total_completions: 0,
-      reminder_enabled: true,
-      target_frequency: 'daily',
-      ...data
-    };
-    
-    return await firestoreService.create(userId, 'userHabits', newUserHabit);
+    console.warn('Backend removed - UserHabit.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (userId, id, data) => {
-    return await firestoreService.update(userId, 'userHabits', id, data);
+    console.warn('Backend removed - UserHabit.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (userId, id) => {
-    return await firestoreService.delete(userId, 'userHabits', id);
+    console.warn('Backend removed - UserHabit.delete called but no data will be saved');
+    return true;
   },
 
   bulkCreate: async (userId, dataArray) => {
-    const created = [];
-    for (const data of dataArray) {
-      const newUserHabit = {
-      start_date: getCurrentDate(),
-      status: 'active',
-      streak_current: 0,
-      streak_longest: 0,
-      total_completions: 0,
-      reminder_enabled: true,
-      target_frequency: 'daily',
-      ...data
-      };
-      const result = await firestoreService.create(userId, 'userHabits', newUserHabit);
-      created.push(result);
-    }
-    return created;
+    console.warn('Backend removed - UserHabit.bulkCreate called but no data will be saved');
+    return dataArray.map(data => ({ id: 'mock_id', ...data }));
   }
 };

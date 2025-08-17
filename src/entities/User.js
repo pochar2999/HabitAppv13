@@ -1,15 +1,10 @@
-import { useAuth } from '../contexts/AuthContext';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import { enableNetwork, disableNetwork, connectFirestoreEmulator } from 'firebase/firestore';
-
-
+// User entity - now returns basic user data since backend is removed
 export const User = {
   me: async (currentUser) => {
     if (!currentUser) return null;
     
-    // Return cached user data immediately for better performance
-    const cachedUser = {
+    // Return basic user data without backend calls
+    return {
       id: currentUser.uid,
       email: currentUser.email,
       full_name: currentUser.displayName || '',
@@ -17,67 +12,19 @@ export const User = {
       emailVerified: true,
       xp: 0,
       level: 1,
-      finance_onboarding_completed: false
+      finance_onboarding_completed: false,
+      created_date: new Date().toISOString(),
+      offline: false
     };
-    
-    try {
-      const userDocRef = doc(db, 'users', currentUser.uid);
-      const userDoc = await getDoc(userDocRef);
-      
-      if (userDoc.exists()) {
-        return {
-          ...cachedUser,
-          ...userDoc.data()
-        };
-      } else {
-        // Create user document if it doesn't exist
-        const userData = {
-          ...cachedUser,
-          created_date: new Date().toISOString(),
-        };
-        
-        // Don't wait for this to complete
-        setDoc(userDocRef, userData).catch(console.error);
-        
-        return userData;
-      }
-    } catch (error) {
-      console.error('Error getting user data:', error);
-      
-      // Always return cached user data on error to prevent app crashes
-      console.warn('Returning cached user data due to error');
-      return {
-        ...cachedUser,
-        offline: true
-      };
-    }
   },
 
   update: async (userId, data) => {
-    try {
-      const userDocRef = doc(db, 'users', userId);
-      await updateDoc(userDocRef, {
-        ...data,
-        updatedAt: new Date()
-      });
-      return data;
-    } catch (error) {
-      console.error('Error updating user:', error);
-      throw error;
-    }
+    console.warn('Backend removed - User.update called but no data will be saved');
+    return data;
   },
 
   updateMyUserData: async (userId, data) => {
-    try {
-      const userDocRef = doc(db, 'users', userId);
-      await updateDoc(userDocRef, {
-        ...data,
-        updatedAt: new Date()
-      });
-      return data;
-    } catch (error) {
-      console.error('Error updating user data:', error);
-      throw error;
-    }
+    console.warn('Backend removed - User.updateMyUserData called but no data will be saved');
+    return data;
   }
 };

@@ -1,49 +1,21 @@
-import { generateId, getCurrentDate, getCurrentTime } from '../utils';
-
-// Mock meal entry data
-let mockMealEntries = [];
-
+// MealEntry entity - now returns empty data since backend is removed
 export const MealEntry = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockMealEntries];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(entry => entry.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newEntry = {
-      id: generateId(),
-      date: getCurrentDate(),
-      time: getCurrentTime(),
-      ...data
-    };
-    mockMealEntries.push(newEntry);
-    return newEntry;
+    console.warn('Backend removed - MealEntry.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockMealEntries.findIndex(entry => entry.id === id);
-    if (index !== -1) {
-      mockMealEntries[index] = { ...mockMealEntries[index], ...data };
-      return mockMealEntries[index];
-    }
-    throw new Error('MealEntry not found');
+    console.warn('Backend removed - MealEntry.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockMealEntries.findIndex(entry => entry.id === id);
-    if (index !== -1) {
-      mockMealEntries.splice(index, 1);
-      return true;
-    }
-    throw new Error('MealEntry not found');
+    console.warn('Backend removed - MealEntry.delete called but no data will be saved');
+    return true;
   }
 };

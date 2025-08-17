@@ -16,7 +16,7 @@ const categoryColors = {
   'Startup': 'bg-blue-100 text-blue-800 border-blue-200',
   'Personal Project': 'bg-green-100 text-green-800 border-green-200',
   'Creative': 'bg-purple-100 text-purple-800 border-purple-200',
-  'Life Improvement': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  'Life Improvement': 'bg-purple-100 text-purple-800 border-purple-200',
   'Other': 'bg-gray-100 text-gray-800 border-gray-200'
 };
 
@@ -419,10 +419,10 @@ export default function IdeaVault() {
       )}
 
       {/* Inspiration Card */}
-      <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
+      <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200">
         <CardContent className="p-6">
-          <h3 className="font-semibold text-yellow-900 mb-3">💡 Idea Generation Tips</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-yellow-800">
+          <h3 className="font-semibold text-purple-900 mb-3">💡 Idea Generation Tips</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-purple-800">
             <div>
               <h4 className="font-medium mb-2">Capture Everything:</h4>
               <ul className="space-y-1 text-xs">
@@ -442,8 +442,8 @@ export default function IdeaVault() {
               </ul>
             </div>
           </div>
-          <div className="mt-4 p-3 bg-white rounded-lg border border-yellow-200">
-            <p className="text-sm text-yellow-700 italic">
+          <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200">
+            <p className="text-sm text-purple-700 italic">
               "The way to get started is to quit talking and begin doing." - Walt Disney
             </p>
           </div>

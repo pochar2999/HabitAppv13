@@ -1,48 +1,21 @@
-import { generateId } from '../utils';
-
-// Mock quote data
-let mockQuotes = [];
-
+// Quote entity - now returns empty data since backend is removed
 export const Quote = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockQuotes];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(quote => quote.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newQuote = {
-      id: generateId(),
-      category: 'Motivation',
-      ...data
-    };
-    mockQuotes.push(newQuote);
-    return newQuote;
+    console.warn('Backend removed - Quote.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockQuotes.findIndex(quote => quote.id === id);
-    if (index !== -1) {
-      mockQuotes[index] = { ...mockQuotes[index], ...data };
-      return mockQuotes[index];
-    }
-    throw new Error('Quote not found');
+    console.warn('Backend removed - Quote.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockQuotes.findIndex(quote => quote.id === id);
-    if (index !== -1) {
-      mockQuotes.splice(index, 1);
-      return true;
-    }
-    throw new Error('Quote not found');
+    console.warn('Backend removed - Quote.delete called but no data will be saved');
+    return true;
   }
 };

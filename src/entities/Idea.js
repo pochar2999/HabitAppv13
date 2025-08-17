@@ -1,48 +1,21 @@
-import { generateId } from '../utils';
-
-// Mock idea data
-let mockIdeas = [];
-
+// Idea entity - now returns empty data since backend is removed
 export const Idea = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockIdeas];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(idea => idea.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newIdea = {
-      id: generateId(),
-      status: 'Backlog',
-      ...data
-    };
-    mockIdeas.push(newIdea);
-    return newIdea;
+    console.warn('Backend removed - Idea.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockIdeas.findIndex(idea => idea.id === id);
-    if (index !== -1) {
-      mockIdeas[index] = { ...mockIdeas[index], ...data };
-      return mockIdeas[index];
-    }
-    throw new Error('Idea not found');
+    console.warn('Backend removed - Idea.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockIdeas.findIndex(idea => idea.id === id);
-    if (index !== -1) {
-      mockIdeas.splice(index, 1);
-      return true;
-    }
-    throw new Error('Idea not found');
+    console.warn('Backend removed - Idea.delete called but no data will be saved');
+    return true;
   }
 };

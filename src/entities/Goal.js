@@ -1,27 +1,21 @@
-import { firestoreService } from '../services/firestore';
-
-
+// Goal entity - now returns empty data since backend is removed
 export const Goal = {
   filter: async (userId, filters = {}) => {
-    return await firestoreService.getAll(userId, 'goals', 'createdAt', 'desc');
+    return [];
   },
 
   create: async (userId, data) => {
-    const newGoal = {
-      progress: 0,
-      status: 'active',
-      milestones: [],
-      ...data
-    };
-    
-    return await firestoreService.create(userId, 'goals', newGoal);
+    console.warn('Backend removed - Goal.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (userId, id, data) => {
-    return await firestoreService.update(userId, 'goals', id, data);
+    console.warn('Backend removed - Goal.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (userId, id) => {
-    return await firestoreService.delete(userId, 'goals', id);
+    console.warn('Backend removed - Goal.delete called but no data will be saved');
+    return true;
   }
 };

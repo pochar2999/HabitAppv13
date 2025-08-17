@@ -1,28 +1,11 @@
-import { generateId, getCurrentDate } from '../utils';
-
-// Mock user financial tip progress data
-let mockUserFinancialTipProgress = [];
-
+// UserFinancialTipProgress entity - now returns empty data since backend is removed
 export const UserFinancialTipProgress = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockUserFinancialTipProgress];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(progress => progress.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newProgress = {
-      id: generateId(),
-      completed_date: getCurrentDate(),
-      ...data
-    };
-    mockUserFinancialTipProgress.push(newProgress);
-    return newProgress;
+    console.warn('Backend removed - UserFinancialTipProgress.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   }
 };

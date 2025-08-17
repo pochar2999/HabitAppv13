@@ -331,18 +331,18 @@ export default function UnpackDay() {
       )}
 
       {/* Info Card */}
-      <Card className="bg-orange-50 border-orange-200">
+      <Card className="bg-purple-50 border-purple-200">
         <CardContent className="p-6">
-          <h3 className="font-semibold text-orange-900 mb-3">Why Daily Reflection Matters</h3>
-          <div className="space-y-2 text-sm text-orange-800">
+          <h3 className="font-semibold text-purple-900 mb-3">Why Daily Reflection Matters</h3>
+          <div className="space-y-2 text-sm text-purple-800">
             <p>🧠 <strong>Self-awareness:</strong> Understand your patterns and behaviors</p>
             <p>📈 <strong>Growth:</strong> Learn from both successes and challenges</p>
             <p>😌 <strong>Mindfulness:</strong> Stay present and intentional</p>
             <p>🎯 <strong>Clarity:</strong> Gain perspective on what truly matters</p>
             <p>💪 <strong>Resilience:</strong> Build emotional intelligence and coping skills</p>
           </div>
-          <div className="mt-4 p-3 bg-white rounded-lg border border-orange-200">
-            <p className="text-sm text-orange-700 italic">
+          <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200">
+            <p className="text-sm text-purple-700 italic">
               "The unexamined life is not worth living." - Socrates
             </p>
           </div>

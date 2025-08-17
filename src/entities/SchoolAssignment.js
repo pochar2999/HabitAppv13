@@ -1,57 +1,25 @@
-import { generateId } from '../utils';
-
-// Mock school assignment data
-let mockAssignments = [];
-
+// SchoolAssignment entity - now returns empty data since backend is removed
 export const SchoolAssignment = {
   list: async () => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return [...mockAssignments];
+    return [];
   },
 
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockAssignments];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(assignment => assignment.user_id === filters.user_id);
-    }
-    
-    if (filters.course_id) {
-      filtered = filtered.filter(assignment => assignment.course_id === filters.course_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newAssignment = {
-      id: generateId(),
-      completed: false,
-      ...data
-    };
-    mockAssignments.push(newAssignment);
-    return newAssignment;
+    console.warn('Backend removed - SchoolAssignment.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockAssignments.findIndex(assignment => assignment.id === id);
-    if (index !== -1) {
-      mockAssignments[index] = { ...mockAssignments[index], ...data };
-      return mockAssignments[index];
-    }
-    throw new Error('Assignment not found');
+    console.warn('Backend removed - SchoolAssignment.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockAssignments.findIndex(assignment => assignment.id === id);
-    if (index !== -1) {
-      mockAssignments.splice(index, 1);
-      return true;
-    }
-    throw new Error('Assignment not found');
+    console.warn('Backend removed - SchoolAssignment.delete called but no data will be saved');
+    return true;
   }
 };

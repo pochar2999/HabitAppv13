@@ -1,28 +1,21 @@
-import { firestoreService } from '../services/firestore';
-import { getCurrentDate } from '../utils';
-
-
+// JournalEntry entity - now returns empty data since backend is removed
 export const JournalEntry = {
   filter: async (userId, filters = {}) => {
-    return await firestoreService.getAll(userId, 'journalEntries', 'date', 'desc');
+    return [];
   },
 
   create: async (userId, data) => {
-    const newEntry = {
-      date: getCurrentDate(),
-      mood: 'neutral',
-      tags: [],
-      ...data
-    };
-    
-    return await firestoreService.create(userId, 'journalEntries', newEntry);
+    console.warn('Backend removed - JournalEntry.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (userId, id, data) => {
-    return await firestoreService.update(userId, 'journalEntries', id, data);
+    console.warn('Backend removed - JournalEntry.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (userId, id) => {
-    return await firestoreService.delete(userId, 'journalEntries', id);
+    console.warn('Backend removed - JournalEntry.delete called but no data will be saved');
+    return true;
   }
 };

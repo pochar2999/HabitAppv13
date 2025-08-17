@@ -1,33 +1,21 @@
-import { firestoreService } from '../services/firestore';
-
-
+// HabitStack entity - now returns empty data since backend is removed
 export const HabitStack = {
   filter: async (userId, filters = {}) => {
-    const firestoreFilters = [];
-    
-    if (filters.is_active !== undefined) {
-      firestoreFilters.push({ field: 'is_active', operator: '==', value: filters.is_active });
-    }
-    
-    return await firestoreService.getFiltered(userId, 'habitStacks', firestoreFilters);
+    return [];
   },
 
   create: async (userId, data) => {
-    const newStack = {
-      is_active: true,
-      user_habit_ids: [],
-      order: 0,
-      ...data
-    };
-    
-    return await firestoreService.create(userId, 'habitStacks', newStack);
+    console.warn('Backend removed - HabitStack.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (userId, id, data) => {
-    return await firestoreService.update(userId, 'habitStacks', id, data);
+    console.warn('Backend removed - HabitStack.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (userId, id) => {
-    return await firestoreService.delete(userId, 'habitStacks', id);
+    console.warn('Backend removed - HabitStack.delete called but no data will be saved');
+    return true;
   }
 };

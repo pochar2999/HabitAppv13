@@ -1,32 +1,15 @@
-import { generateId } from '../utils';
-
-// Mock badge data
-let mockBadges = [];
-
+// Badge entity - now returns empty data since backend is removed
 export const Badge = {
   list: async () => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return [...mockBadges];
+    return [];
   },
 
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockBadges];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(badge => badge.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newBadge = {
-      id: generateId(),
-      ...data
-    };
-    mockBadges.push(newBadge);
-    return newBadge;
+    console.warn('Backend removed - Badge.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   }
 };

@@ -1,52 +1,21 @@
-import { generateId, getCurrentDate } from '../utils';
-
-// Mock calendar event data
-let mockCalendarEvents = [];
-
+// CalendarEvent entity - now returns empty data since backend is removed
 export const CalendarEvent = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockCalendarEvents];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(event => event.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newEvent = {
-      id: generateId(),
-      color: 'blue',
-      category: 'To-do',
-      is_recurring: false,
-      reminder_enabled: false,
-      reminder_time: 15,
-      ...data
-    };
-    mockCalendarEvents.push(newEvent);
-    return newEvent;
+    console.warn('Backend removed - CalendarEvent.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockCalendarEvents.findIndex(event => event.id === id);
-    if (index !== -1) {
-      mockCalendarEvents[index] = { ...mockCalendarEvents[index], ...data };
-      return mockCalendarEvents[index];
-    }
-    throw new Error('CalendarEvent not found');
+    console.warn('Backend removed - CalendarEvent.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockCalendarEvents.findIndex(event => event.id === id);
-    if (index !== -1) {
-      mockCalendarEvents.splice(index, 1);
-      return true;
-    }
-    throw new Error('CalendarEvent not found');
+    console.warn('Backend removed - CalendarEvent.delete called but no data will be saved');
+    return true;
   }
 };

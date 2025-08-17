@@ -85,8 +85,8 @@ const features = [
     description: "Set and track your personal objectives",
     icon: Star,
     url: createPageUrl("Goals"),
-    color: "bg-yellow-50 border-yellow-200 hover:bg-yellow-100",
-    iconColor: "text-yellow-600"
+    color: "bg-purple-50 border-purple-200 hover:bg-purple-100",
+    iconColor: "text-purple-600"
   },
   {
     title: "Future Self",

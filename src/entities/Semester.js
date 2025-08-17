@@ -1,53 +1,25 @@
-import { generateId, getCurrentDate } from '../utils';
-
-// Mock semester data
-let mockSemesters = [];
-
+// Semester entity - now returns empty data since backend is removed
 export const Semester = {
   filter: async (filters) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    let filtered = [...mockSemesters];
-    
-    if (filters.user_id) {
-      filtered = filtered.filter(semester => semester.user_id === filters.user_id);
-    }
-    
-    return filtered;
+    return [];
   },
 
   get: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return mockSemesters.find(s => s.id === id);
+    return null;
   },
 
   create: async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newSemester = {
-      id: generateId(),
-      is_active: false,
-      ...data
-    };
-    mockSemesters.push(newSemester);
-    return newSemester;
+    console.warn('Backend removed - Semester.create called but no data will be saved');
+    return { id: 'mock_id', ...data };
   },
 
   update: async (id, data) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockSemesters.findIndex(semester => semester.id === id);
-    if (index !== -1) {
-      mockSemesters[index] = { ...mockSemesters[index], ...data };
-      return mockSemesters[index];
-    }
-    throw new Error('Semester not found');
+    console.warn('Backend removed - Semester.update called but no data will be saved');
+    return { id, ...data };
   },
 
   delete: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockSemesters.findIndex(semester => semester.id === id);
-    if (index !== -1) {
-      mockSemesters.splice(index, 1);
-      return true;
-    }
-    throw new Error('Semester not found');
+    console.warn('Backend removed - Semester.delete called but no data will be saved');
+    return true;
   }
 };
