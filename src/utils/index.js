@@ -36,16 +36,6 @@ export const createPageUrl = (pageName) => {
   return pageMap[pageName] || '/';
 };
 
-// Generate unique IDs
-export const generateId = () => {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
-};
-
-// Format date for display
-export const formatDate = (date) => {
-  return new Date(date).toLocaleDateString();
-};
-
 // Get current date in YYYY-MM-DD format
 export const getCurrentDate = () => {
   return new Date().toISOString().split('T')[0];

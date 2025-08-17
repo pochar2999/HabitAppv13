@@ -280,7 +280,7 @@ export default function TodoList() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <AlertCircle className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+            <AlertCircle className="w-8 h-8 text-purple-500 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900">{dueTodayTodos}</div>
             <div className="text-sm text-gray-600">Due Today</div>
           </CardContent>
@@ -332,7 +332,7 @@ export default function TodoList() {
                   : isOverdue(todo)
                   ? 'bg-red-50 border-red-200'
                   : isDueToday(todo)
-                  ? 'bg-orange-50 border-orange-200'
+                  ? 'bg-purple-50 border-purple-200'
                   : ''
               }`}
             >
@@ -362,7 +362,7 @@ export default function TodoList() {
                       {todo.due_date && (
                         <div className={`flex items-center gap-1 text-sm ${
                           isOverdue(todo) ? 'text-red-600 font-medium' :
-                          isDueToday(todo) ? 'text-orange-600 font-medium' :
+                          isDueToday(todo) ? 'text-purple-600 font-medium' :
                           'text-gray-500'
                         }`}>
                           <Calendar className="w-4 h-4" />
