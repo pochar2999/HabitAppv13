@@ -170,12 +170,6 @@ export default function TodoList() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-
-    {/* TEST BUTTON */}
-      <Button className="bg-primary text-primary-foreground">
-      Purple Test Button
-    </Button>
-      
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Todo List</h1>
