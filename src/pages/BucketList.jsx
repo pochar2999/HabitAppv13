@@ -123,7 +123,7 @@ export default function BucketList() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -151,7 +151,7 @@ export default function BucketList() {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="bg-yellow-500 hover:bg-yellow-600 text-black">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Plus className="w-4 h-4 mr-2" />
               Add Dream
             </Button>
@@ -202,7 +202,7 @@ export default function BucketList() {
                 <Button variant="outline" onClick={() => setShowDialog(false)}>
                   Cancel
                 </Button>
-                <Button className="bg-yellow-500 hover:bg-yellow-600 text-black" onClick={createItem}>
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={createItem}>
                   {editingItem ? "Update Dream" : "Add Dream"}
                 </Button>
               </div>
@@ -215,7 +215,7 @@ export default function BucketList() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <List className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+            <List className="w-8 h-8 text-primary mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900">{items.length}</div>
             <div className="text-sm text-gray-600">Total Dreams</div>
           </CardContent>
@@ -229,7 +229,7 @@ export default function BucketList() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <Star className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+            <Star className="w-8 h-8 text-primary mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900">{pendingItems.length}</div>
             <div className="text-sm text-gray-600">In Progress</div>
           </CardContent>
@@ -254,7 +254,7 @@ export default function BucketList() {
             </p>
             <Button
               onClick={() => setShowDialog(true)}
-              className="bg-yellow-500 hover:bg-yellow-600 text-black"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Your First Dream
